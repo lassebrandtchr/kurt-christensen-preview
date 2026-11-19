@@ -60,6 +60,7 @@ npm run sync-images
 - Scriptet læser KUN `assets/studio/<slug>/godkendt/*.png|jpg|webp`. Kladder direkte i `assets/studio/<slug>/` og alt i `assets/raw/` bruges aldrig.
 - Billederne optimeres til WebP i `src/assets/cars/<slug>/`, og bilens `images[]` opdateres sorteret efter filnavn.
 - **Coverbilledet er altid filen der starter med `01_`** (fx `01_front34.png`). Det skal være bilen set skråt forfra. Scriptet advarer, hvis det mangler.
+- **Logo:** sitet bruger `src/assets/brand/logo-transparent.png` (baggrunden gjort gennemsigtig med `node scripts/logo-to-alpha.mjs`; selve logoet er uændret). Det virker kun på mørk baggrund. Originalen `logo.png` bevares.
 - Forsidens hero er `assets/studio/_proever/studio_ferrari_ext_3d.png` (godkendt af Lasse). Den kopieres til `src/assets/brand/hero-studio.webp`.
 - En bil uden billeder får automatisk en placeholder med logoet ("Studiebilleder på vej"), aldrig et brudt billede.
 - Ved build laver Astro AVIF + WebP i flere bredder (srcset, lazy loading).

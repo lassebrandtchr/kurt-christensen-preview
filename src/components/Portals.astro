@@ -24,7 +24,7 @@ const count = (u: 'klassisk' | 'eksklusiv') => {
   <a href={u("/eksklusive-biler/")} class="portal portal--eksklusiv" data-univers="eksklusiv">
     <span class="portal__lines" aria-hidden="true"></span>
     <span class="portal__count">{count('eksklusiv')}</span>
-    <span class="portal__title"><span class="metal-text shine">Eksklusive biler</span></span>
+    <span class="portal__title"><span class="lux"><span class="metal-text shine">Eksklusive biler</span><span class="lux__sweep" aria-hidden="true">Eksklusive biler</span><span class="lux__glint lux__glint--1" aria-hidden="true"></span><span class="lux__glint lux__glint--2" aria-hidden="true"></span><span class="lux__glint lux__glint--3" aria-hidden="true"></span></span></span>
     <span class="portal__teaser">Moderne præcision, turbokraft og firehjulstræk. Sportsvogne og gran turismo til den, der vil have det bedste.</span>
     <span class="portal__cta">Gå til eksklusive biler <Icon name="arrow" /></span>
   </a>
@@ -32,10 +32,9 @@ const count = (u: 'klassisk' | 'eksklusiv') => {
 
 <style>
   .portals { display: grid; grid-template-columns: 1fr; }
+  /* Lige brede portaler; ingen af dem klemmes ved hover (Lasse 2026-11-19). */
   @media (min-width: 900px) {
-    .portals { grid-template-columns: 1fr 1fr; transition: grid-template-columns 700ms var(--ease-out); }
-    .portals:has(.portal--klassisk:hover) { grid-template-columns: 1.15fr 0.85fr; }
-    .portals:has(.portal--eksklusiv:hover) { grid-template-columns: 0.85fr 1.15fr; }
+    .portals { grid-template-columns: 1fr 1fr; }
   }
   .portal {
     position: relative;
@@ -94,6 +93,9 @@ const count = (u: 'klassisk' | 'eksklusiv') => {
       var(--paper);
   }
   .portal--klassisk .portal__title { font-size: clamp(3rem, 1.8rem + 4.6vw, 6.25rem); }
+  /* "EKSKLUSIVE" er ~8,2 em bred i den brede skrift: skaler efter portalens bredde, så ordet aldrig beskæres. */
+  .portal--eksklusiv { container-type: inline-size; }
+  .portal--eksklusiv .portal__title { font-size: min(clamp(2.6rem, 1.6rem + 4vw, 5.5rem), calc(100cqi / 8.5)); }
   .portal__grain {
     position: absolute;
     inset: 0;
@@ -131,4 +133,77 @@ const count = (u: 'klassisk' | 'eksklusiv') => {
   }
   .portal--eksklusiv:hover .portal__lines { background-size: calc(100% / 8) 100%; }
   .portal--eksklusiv .portal__teaser { color: var(--silver); }
+
+  /* "Eksklusive biler": lys der glider hen over metallet, glød og små stjerneglimt,
+     så længe musen er over teksten (eller portalen har tastaturfokus). */
+  .lux {
+    position: relative;
+    display: inline-block;
+    transition: filter 500ms var(--ease-out);
+  }
+  .lux__sweep {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg,
+      transparent 34%,
+      rgba(255, 255, 255, 0.35) 42%,
+      rgba(255, 255, 255, 0.95) 48%,
+      rgba(255, 244, 220, 1) 50%,
+      rgba(255, 255, 255, 0.95) 52%,
+      rgba(255, 255, 255, 0.35) 58%,
+      transparent 66%);
+    background-size: 220% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out);
+    animation: lux-sweep 3s linear infinite;
+    animation-play-state: paused;
+  }
+  .lux__glint {
+    position: absolute;
+    width: clamp(14px, 1.5vw, 22px);
+    aspect-ratio: 1;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 400ms var(--ease-out);
+    background:
+      linear-gradient(90deg, transparent 44%, #fff 50%, transparent 56%),
+      linear-gradient(0deg, transparent 44%, #fff 50%, transparent 56%);
+    clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+    animation: lux-glint 2.2s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .lux__glint--1 { top: 2%; left: 1%; animation-delay: 0s; }
+  .lux__glint--2 { top: -4%; left: 52%; animation-delay: 0.75s; }
+  .lux__glint--3 { top: 56%; left: 66%; animation-delay: 1.5s; }
+
+  .lux:hover,
+  .portal--eksklusiv:focus-visible .lux {
+    filter: drop-shadow(0 0 10px rgba(236, 238, 242, 0.35)) drop-shadow(0 0 28px rgba(201, 164, 106, 0.18));
+  }
+  .lux:hover .lux__sweep,
+  .portal--eksklusiv:focus-visible .lux__sweep { opacity: 1; animation-play-state: running; }
+  .lux:hover .lux__glint,
+  .portal--eksklusiv:focus-visible .lux__glint { opacity: 1; animation-play-state: running; }
+
+  /* Lyset glider over teksten på ~2 s og hviler et øjeblik, før det kommer igen. */
+  @keyframes lux-sweep {
+    0% { background-position: 110% 0; }
+    70% { background-position: -10% 0; }
+    100% { background-position: -10% 0; }
+  }
+  @keyframes lux-glint {
+    0%, 100% { transform: scale(0) rotate(0deg); }
+    18% { transform: scale(1) rotate(45deg); }
+    36% { transform: scale(0) rotate(90deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lux__sweep, .lux__glint { display: none; }
+  }
 </style>

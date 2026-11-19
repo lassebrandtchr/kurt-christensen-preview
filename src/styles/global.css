@@ -64,6 +64,7 @@
   --max: 1320px;
   --chamfer: 10px;
   --header-h: 72px;
+  --header-h-lg: 88px;
 
   /* Motion */
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -98,6 +99,7 @@
 
   color-scheme: dark;
 }
+@media (min-width: 1024px) { :root { --header-h: var(--header-h-lg); } }
 
 [data-univers='klassisk'] {
   --bg: var(--paper);

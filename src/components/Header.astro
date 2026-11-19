@@ -17,7 +17,7 @@ const isActive = (m: string[]) => m.some((p) => path.startsWith(p));
 <header class:list={['site-header', { 'site-header--overlay': overlay }]} data-header>
   <div class="site-header__inner container">
     <a href={u("/")} class="site-header__logo" aria-label="Kurt Christensen – til forsiden">
-      <Logo width={168} alt="" />
+      <Logo width={240} alt="" />
     </a>
     <nav class="site-nav" id="site-nav" aria-label="Hovedmenu" data-nav>
       <ul>
@@ -75,7 +75,7 @@ const isActive = (m: string[]) => m.some((p) => path.startsWith(p));
     gap: clamp(12px, 2vw, 32px);
   }
   .site-header__logo { flex: none; display: block; margin-right: auto; }
-  .site-header__logo :global(img) { width: clamp(128px, 14vw, 168px); height: auto; }
+  .site-header__logo :global(img) { width: clamp(150px, 19vw, 240px); height: auto; display: block; }
   .site-nav ul { list-style: none; display: flex; gap: clamp(14px, 1.8vw, 28px); }
   .site-nav a {
     position: relative;

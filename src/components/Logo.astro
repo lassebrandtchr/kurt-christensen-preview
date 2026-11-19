@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
-import logo from '../assets/brand/logo.png';
+// Gennemsigtig udgave (lavet med scripts/logo-to-alpha.mjs). Kun til mørke baggrunde.
+import logo from '../assets/brand/logo-transparent.png';
 interface Props { class?: string; width?: number; loading?: 'eager' | 'lazy'; alt?: string; }
 const { class: cls, width = 220, loading = 'eager', alt = 'Kurt Christensen – vi handler med klassiske og eksklusive biler' } = Astro.props;
 ---

@@ -140,7 +140,8 @@ const GROQ = `*[_type == "car" && defined(make) && defined(year) && !(_id in pat
 }`;
 
 async function fromSanity(): Promise<Car[]> {
-  const host = SANITY_READ_TOKEN ? 'api.sanity.io' : 'apicdn.sanity.io';
+  // Altid live-API'et ved build: apicdn kan levere en cachet (forældet) version, så Kurts nyeste rettelser ikke kommer med.
+  const host = 'api.sanity.io';
   const url = `https://${SANITY_PROJECT_ID}.${host}/v2024-01-01/data/query/${SANITY_DATASET}?query=${encodeURIComponent(GROQ)}`;
   const res = await fetch(url, {
     headers: SANITY_READ_TOKEN ? { Authorization: `Bearer ${SANITY_READ_TOKEN}` } : {},

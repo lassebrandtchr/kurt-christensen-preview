@@ -22,6 +22,11 @@ if (gallery) {
     arrowNextTitle: 'Næste billede',
     errorMsg: 'Billedet kunne ikke indlæses.',
     indexIndicatorSep: ' / ',
+    // Hele bilen skal altid være inden for skærmen: luft til knapper (top) og billedtekst (bund).
+    paddingFn: (viewport) =>
+      viewport.x < 768
+        ? { top: 56, bottom: 64, left: 0, right: 0 }
+        : { top: 64, bottom: 76, left: 72, right: 72 },
   });
   lightbox.on('uiRegister', () => {
     lightbox.pswp?.ui?.registerElement({

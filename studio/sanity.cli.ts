@@ -7,4 +7,5 @@ export default defineCliConfig({
   },
   // Studiet hostes gratis på https://<navn>.sanity.studio efter `npm run deploy`
   studioHost: process.env.SANITY_STUDIO_HOSTNAME || 'kurt-christensen',
+  deployment: { appId: 'sj1pwe9jgqwj3aqj40hmm4uv' },
 });

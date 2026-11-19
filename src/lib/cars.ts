@@ -119,7 +119,19 @@ async function fromCollection(): Promise<Car[]> {
 }
 
 /* ---------------- Sanity (GROQ over HTTP, ingen SDK) ---------------- */
-const GROQ = `*[_type == "car" && defined(slug.current) && !(_id in path("drafts.**"))] | order(_createdAt desc){
+export const slugify = (input: string) =>
+  input
+    .toLowerCase()
+    .replace(/æ/g, 'ae')
+    .replace(/ø/g, 'oe')
+    .replace(/å/g, 'aa')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 80);
+
+const GROQ = `*[_type == "car" && defined(make) && defined(year) && !(_id in path("drafts.**"))] | order(_createdAt desc){
   "slug": slug.current, make, model, variant, year, km, price, priceNote, status, univers, featured,
   fuel, gearbox, hp, engine, color, seoTitle, metaDescription, h1, teaser, description, highlights,
   specs[]{label, value, source},
@@ -137,7 +149,8 @@ async function fromSanity(): Promise<Car[]> {
   const { result } = (await res.json()) as { result: any[] };
   return (result ?? []).map((d) =>
     finalize({
-      slug: d.slug,
+      // Webadressen laves automatisk, hvis Kurt ikke har trykket "Generate" (samme regel som i Studio).
+      slug: d.slug || slugify([d.make, d.model, d.variant, d.year].filter(Boolean).join(' ')),
       make: d.make ?? '',
       model: d.model ?? '',
       variant: d.variant ?? null,

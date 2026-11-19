@@ -15,6 +15,10 @@ export const car = defineType({
     { name: 'specs', title: 'Specifikationer' },
     { name: 'seo', title: 'SEO' },
   ],
+  fieldsets: [
+    { name: 'detaljer', title: 'Flere detaljer (valgfrit)', description: 'Udfyld det, du kender. Tomme felter vises som "Kontakt Kurt".', options: { collapsible: true, collapsed: true } },
+    { name: 'avanceret', title: 'Avanceret (behøver du sjældent røre)', options: { collapsible: true, collapsed: true } },
+  ],
   fields: [
     defineField({
       name: 'univers',
@@ -39,19 +43,6 @@ export const car = defineType({
     defineField({ name: 'model', title: 'Model', type: 'string', group: 'grund', description: 'Fx 911', validation: (r) => r.required() }),
     defineField({ name: 'variant', title: 'Variant', type: 'string', group: 'grund', description: 'Fx Turbo (997). Valgfri.' }),
     defineField({ name: 'year', title: 'Årgang', type: 'number', group: 'grund', validation: (r) => r.required().integer().min(1900).max(2100) }),
-    defineField({
-      name: 'slug',
-      title: 'Webadresse',
-      type: 'slug',
-      group: 'grund',
-      description: 'Tryk "Generate". Bliver til /biler/<adresse>/',
-      options: {
-        source: (doc: any) => [doc.make, doc.model, doc.variant, doc.year].filter(Boolean).join(' '),
-        slugify: (input: string) =>
-          input.toLowerCase().replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80),
-      },
-      validation: (r) => r.required(),
-    }),
     defineField({ name: 'km', title: 'Kilometer', type: 'number', group: 'grund', description: 'Kun tal, fx 72000. Tomt = vises som "Kontakt Kurt".' }),
     defineField({ name: 'price', title: 'Pris (kr.)', type: 'number', group: 'grund', description: 'Kun tal, fx 650000. Tomt = "Pris efter aftale".' }),
     defineField({
@@ -62,13 +53,36 @@ export const car = defineType({
       description: 'Vises under prisen. Tomt = "Afgiftsforhold: kontakt Kurt".',
       options: { list: ['Inkl. dansk afgift', 'Prisen er uden dansk registreringsafgift'] },
     }),
-    defineField({ name: 'featured', title: 'Fremhæv på forsiden', type: 'boolean', group: 'grund', initialValue: false, description: 'Vises som "Udvalgt bil" på forsiden (én ad gangen).' }),
-    defineField({ name: 'fuel', title: 'Drivmiddel', type: 'string', group: 'grund', options: { list: ['Benzin', 'Diesel', 'Hybrid', 'El'] } }),
-    defineField({ name: 'gearbox', title: 'Gearkasse', type: 'string', group: 'grund', description: 'Fx Manuel, Automatisk, PDK. Tomt = "Kontakt Kurt".' }),
-    defineField({ name: 'hp', title: 'Hestekræfter', type: 'number', group: 'grund' }),
-    defineField({ name: 'engine', title: 'Motor', type: 'string', group: 'grund', description: 'Fx 3,6 biturbo boxer' }),
-    defineField({ name: 'color', title: 'Farve', type: 'string', group: 'grund', description: 'Fx Rød med interiør i sort/rødt læder' }),
+    defineField({ name: 'fuel', fieldset: 'detaljer', title: 'Drivmiddel', type: 'string', group: 'grund', options: { list: ['Benzin', 'Diesel', 'Hybrid', 'El'] } }),
+    defineField({ name: 'gearbox', fieldset: 'detaljer', title: 'Gearkasse', type: 'string', group: 'grund', description: 'Fx Manuel, Automatisk, PDK. Tomt = "Kontakt Kurt".' }),
+    defineField({ name: 'hp', fieldset: 'detaljer', title: 'Hestekræfter', type: 'number', group: 'grund' }),
+    defineField({ name: 'engine', fieldset: 'detaljer', title: 'Motor', type: 'string', group: 'grund', description: 'Fx 3,6 biturbo boxer' }),
+    defineField({ name: 'color', fieldset: 'detaljer', title: 'Farve', type: 'string', group: 'grund', description: 'Fx Rød med interiør i sort/rødt læder' }),
+    defineField({
+      name: 'slug',
+      title: 'Webadresse',
+      type: 'slug',
+      group: 'grund',
+      fieldset: 'avanceret',
+      description: 'Lad den være tom – adressen laves automatisk ud fra mærke, model og årgang. Tryk kun "Generate", hvis du vil låse adressen.',
+      options: {
+        source: (doc: any) => [doc.make, doc.model, doc.variant, doc.year].filter(Boolean).join(' '),
+        slugify: (input: string) =>
+          input.toLowerCase().replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80),
+      },
+    }),
+    defineField({ name: 'featured', title: 'Fremhæv på forsiden', type: 'boolean', group: 'grund', fieldset: 'avanceret', initialValue: false, description: 'Vises som "Udvalgt bil" på forsiden (én ad gangen).' }),
 
+    defineField({
+      name: 'rawImages',
+      title: 'Råbilleder (fra mobilen)',
+      type: 'array',
+      group: 'billeder',
+      description:
+        'Træk alle dine mobilbilleder af bilen herind på én gang. De vises IKKE på hjemmesiden – de bruges til at lave studiebillederne. Indtil studiebillederne er klar, viser siden et pænt "billeder på vej"-felt.',
+      of: [defineArrayMember({ type: 'image' })],
+      options: { layout: 'grid' },
+    }),
     defineField({
       name: 'coverImage',
       title: 'Forsidebillede (skråt forfra)',
@@ -78,14 +92,14 @@ export const car = defineType({
         'VIGTIGT: Vælg et billede af bilen set SKRÅT FORFRA (front + den ene side). Det bruges som første billede på bilkortet og i alle oversigter.',
       options: { hotspot: true },
       fields: [defineField({ name: 'alt', title: 'Billedtekst (alt)', type: 'string', description: 'Fx "Ferrari 308 GTS 1978 i rød, set skråt forfra". Tomt = laves automatisk.' })],
-      validation: (r) => r.required().error('Upload et billede af bilen set skråt forfra'),
+      validation: (r) => r.required().warning('Husk et studiebillede skråt forfra, når det er klar – indtil da vises "billeder på vej".'),
     }),
     defineField({
       name: 'images',
       title: 'Galleri',
       type: 'array',
       group: 'billeder',
-      description: 'Resten af billederne (studiebilleder). Træk for at ændre rækkefølgen. Forsidebilledet skal ikke uploades igen her.',
+      description: 'Resten af studiebillederne. Træk flere filer herind på én gang, og træk i billederne for at ændre rækkefølgen. Forsidebilledet skal ikke uploades igen her.',
       of: [
         defineArrayMember({
           type: 'image',

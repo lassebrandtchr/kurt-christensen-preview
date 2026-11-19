@@ -20,6 +20,10 @@ const count = (u: 'klassisk' | 'eksklusiv') => {
     <span class="portal__title">Klassiske biler</span>
     <span class="portal__teaser">Biler med patina, mekanik og en historie at fortælle. Fra 70'er-Ferrari til amerikanske V8-pickupper.</span>
     <span class="portal__cta">Gå til klassiske biler <Icon name="arrow" /></span>
+    <span class="portal__drive" data-drawing={u('/drawings/ferrari-308-gts.svg')} style="--spin:-938deg; --exhaust-y:74%" aria-hidden="true">
+      <span class="portal__car"></span>
+      <span class="portal__exhaust"><i></i><i></i><i></i></span>
+    </span>
   </a>
   <a href={u("/eksklusive-biler/")} class="portal portal--eksklusiv" data-univers="eksklusiv">
     <span class="portal__lines" aria-hidden="true"></span>
@@ -27,8 +31,50 @@ const count = (u: 'klassisk' | 'eksklusiv') => {
     <span class="portal__title"><span class="lux"><span class="metal-text shine">Eksklusive biler</span><span class="lux__sweep" aria-hidden="true">Eksklusive biler</span><span class="lux__glint lux__glint--1" aria-hidden="true"></span><span class="lux__glint lux__glint--2" aria-hidden="true"></span><span class="lux__glint lux__glint--3" aria-hidden="true"></span></span></span>
     <span class="portal__teaser">Moderne præcision, turbokraft og firehjulstræk. Sportsvogne og gran turismo til den, der vil have det bedste.</span>
     <span class="portal__cta">Gå til eksklusive biler <Icon name="arrow" /></span>
+    <span class="portal__drive" data-drawing={u('/drawings/lamborghini-gallardo-lp560-4.svg')} style="--spin:-779deg; --exhaust-y:70%" aria-hidden="true">
+      <span class="portal__car"></span>
+      <span class="portal__exhaust"><i></i><i></i><i></i></span>
+    </span>
   </a>
 </section>
+
+<script>
+  // Stregtegningerne hentes først, når forsidens portaler nærmer sig skærmen (holder forsiden let).
+  const drives = [...document.querySelectorAll<HTMLElement>('.portal__drive[data-drawing]')];
+  const load = async (el: HTMLElement) => {
+    if (el.dataset.loaded) return;
+    el.dataset.loaded = '1';
+    try {
+      const svg = await (await fetch(el.dataset.drawing!)).text();
+      el.querySelector('.portal__car')!.innerHTML = svg;
+    } catch { /* uden tegning: portalen virker som før */ }
+  };
+  const touchMq = window.matchMedia('(hover: none), (pointer: coarse)');
+  // Observér portalen (ikke bilen – den står uden for billedet, indtil den kører ind).
+  const preload = new IntersectionObserver(
+    (entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const drive = e.target.querySelector<HTMLElement>('.portal__drive[data-drawing]');
+      if (drive) load(drive);
+      preload.unobserve(e.target);
+    }),
+    { rootMargin: '400px 0px' },
+  );
+  // Touch: bilen kører ind én gang, når portalen er godt inde på skærmen, og bliver stående.
+  const arrive = new IntersectionObserver(
+    (entries) => entries.forEach((e) => {
+      if (!touchMq.matches || e.intersectionRatio < 0.55) return;
+      e.target.classList.add('is-in');
+      arrive.unobserve(e.target);
+    }),
+    { threshold: 0.55 },
+  );
+  drives.forEach((d) => {
+    const portal = d.closest('.portal')!;
+    preload.observe(portal);
+    arrive.observe(portal);
+  });
+</script>
 
 <style>
   .portals { display: grid; grid-template-columns: 1fr; }
@@ -70,6 +116,84 @@ const count = (u: 'klassisk' | 'eksklusiv') => {
     letter-spacing: var(--display-track);
   }
   .portal__teaser { max-width: 40ch; color: var(--fg-soft); font-size: 1.0625rem; }
+
+  /* Stregtegnet bil der kører ind (hover / scroll på touch) og bakker ud igen. Hjulene ruller med:
+     --spin er beregnet ud fra kørselslængden (118 % af tegningens bredde) og hjulets radius. */
+  .portal__drive {
+    position: absolute;
+    right: clamp(16px, 3vw, 48px);
+    bottom: clamp(20px, 4vw, 64px);
+    width: min(42%, 380px);
+    aspect-ratio: 3.4;
+    z-index: 0;
+    pointer-events: none;
+    transform: translateX(118%);
+    transition: transform 1.15s cubic-bezier(0.55, 0, 0.8, 0.35);
+  }
+  .portal__car, .portal__car :global(svg) { display: block; width: 100%; height: auto; }
+  .portal--klassisk .portal__car { color: #141210; }
+  .portal--eksklusiv .portal__car { color: #f4f4f2; }
+  .portal__car :global(.car-wheel) { transform: rotate(0deg); transition: transform 1.15s cubic-bezier(0.55, 0, 0.8, 0.35); }
+  .portal:hover .portal__drive,
+  .portal:focus-visible .portal__drive,
+  .portal.is-in .portal__drive {
+    transform: translateX(0);
+    transition: transform 1.7s cubic-bezier(0.16, 0.84, 0.3, 1);
+  }
+  .portal:hover .portal__car :global(.car-wheel),
+  .portal:focus-visible .portal__car :global(.car-wheel),
+  .portal.is-in .portal__car :global(.car-wheel) {
+    transform: rotate(var(--spin));
+    transition: transform 1.7s cubic-bezier(0.16, 0.84, 0.3, 1);
+  }
+  /* Udstødning: små røgpust bag bilen, mens den kører ind. */
+  .portal__exhaust { position: absolute; left: 98.5%; top: var(--exhaust-y); width: 0; height: 0; }
+  .portal__exhaust i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -6px;
+    border-radius: 50%;
+    opacity: 0;
+    background: radial-gradient(circle, var(--smoke) 0%, transparent 70%);
+    filter: blur(2px);
+  }
+  .portal--klassisk { --smoke: rgba(60, 48, 36, 0.38); }
+  .portal--eksklusiv { --smoke: rgba(235, 235, 235, 0.3); }
+  .portal:hover .portal__exhaust i,
+  .portal:focus-visible .portal__exhaust i,
+  .portal.is-in .portal__exhaust i { animation: puff 0.9s ease-out 2; }
+  .portal__exhaust i:nth-child(2) { animation-delay: 0.3s !important; }
+  .portal__exhaust i:nth-child(3) { animation-delay: 0.6s !important; }
+  @keyframes puff {
+    0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+    20% { opacity: 1; }
+    100% { opacity: 0; transform: translate(46px, -14px) scale(2.4); }
+  }
+  /* Teksten må aldrig dækkes af bilen. */
+  @media (min-width: 900px) {
+    .portal__teaser { max-width: min(40ch, 50%); }
+  }
+  @media (max-width: 899px) {
+    .portal__drive {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      order: -1;
+      align-self: flex-end;
+      width: min(82%, 400px);
+      margin-bottom: auto;
+    }
+    .portal--klassisk .portal__drive { margin-top: clamp(150px, 40vw, 190px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portal__drive, .portal:hover .portal__drive, .portal.is-in .portal__drive { transform: none; opacity: 0; transition: opacity 600ms; }
+    .portal:hover .portal__drive, .portal:focus-visible .portal__drive, .portal.is-in .portal__drive { opacity: 1; }
+    .portal__car :global(.car-wheel) { transition: none !important; transform: none !important; }
+    .portal__exhaust { display: none; }
+  }
   .portal__cta {
     display: inline-flex;
     align-items: center;

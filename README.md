@@ -82,11 +82,11 @@ Spam-beskyttelse: honeypot-feltet `_gotcha`. Validering sker i browseren med dan
 
 ## CMS: Sanity (så Kurt selv kan tilføje biler)
 
-Studiet ligger i `site/studio/` og har sin egen `package.json`. Det installeres ikke sammen med sitet. Skemaet spejler content collection'en, inkl. **univers**, **status** og et påkrævet felt **"Forsidebillede (skråt forfra)"** ud over galleriet.
+Studiet ligger i `site/studio/` og har sin egen `package.json`. Det installeres ikke sammen med sitet. Skemaet spejler content collection'en. Kun **univers**, **mærke**, **model** og **årgang** er påkrævet; status er "Til salg" som standard, webadressen laves automatisk (sitet laver den selv ud fra mærke/model/variant/årgang, hvis Kurt ikke trykker Generate), og sjældne felter ligger i lukkede sektioner ("Flere detaljer", "Avanceret"). Fanen Billeder har **Råbilleder (fra mobilen)** (vises ikke på sitet; til den kommende studiebillede-pipeline), **Forsidebillede (skråt forfra)** (advarsel, ikke krav; uden billeder viser sitet "billeder på vej") og **Galleri**. Kurts guide: `../Guide til Kurt – biler på hjemmesiden.md`.
 
 ### Lasses opsætning (gratis plan, én gang)
 
-**Status (2026-11-19):** Trin 1–4 er gjort. Projekt "Kurt Christensen biler", Project ID `vn1kgmwg`, dataset `production` (offentligt), ejet af Lasses konto. Sanity kører 30 dages prøveperiode på betalte funktioner og falder derefter til gratisplanen. De 6 biler og alle 29 studiebilleder er importeret, og `site/.env` peger på Sanity, så sitet bygger fra Sanity. Mangler: trin 5, 6 og 8 samt deploy hook.
+**Status (2026-11-19):** Trin 1–4 er gjort. Projekt "Kurt Christensen biler", Project ID `vn1kgmwg`, dataset `production` (offentligt), ejet af Lasses konto. Sanity kører 30 dages prøveperiode på betalte funktioner og falder derefter til gratisplanen. De 6 biler og alle 29 studiebilleder er importeret, og `site/.env` peger på Sanity, så sitet bygger fra Sanity. Trin 5 er gjort 2026-11-20: Studio er udgivet på https://kurt-christensen.sanity.studio (appId i `studio/sanity.cli.ts`). Mangler: trin 6 (Kurt inviteres ikke endnu; på gratisplanen findes kun rollerne Administrator og Viewer) og 8 samt deploy hook.
 
 1. Opret en gratis konto på sanity.io og et nyt projekt (dataset: `production`). Notér **Project ID**.
 2. Lav `studio/.env` ud fra `studio/.env.example` og sæt `SANITY_STUDIO_PROJECT_ID`.
@@ -121,13 +121,18 @@ Build-indstillinger hos hosting: base directory `site`, build command `npm run b
 
 1. Log ind på `https://kurt-christensen.sanity.studio`.
 2. Klik **Alle biler** → **+ (Opret)**.
-3. **Grunddata:** vælg **Univers** (Klassisk / Eksklusiv) og **Status** (Til salg). Udfyld mærke, model, variant, årgang, km og pris. Tryk **Generate** ved "Webadresse". Ukendte felter lades tomme; de vises som "Kontakt Kurt". Gæt aldrig.
-4. **Billeder:** upload først **Forsidebillede (skråt forfra)**, altså bilen set skråt forfra. Træk derefter resten af studiebillederne ind i **Galleri**, og træk dem i den rækkefølge de skal vises.
+3. **Grunddata:** vælg **Univers** (Klassisk / Eksklusiv). Udfyld mærke, model, (variant), årgang, km og pris. Ukendte felter lades tomme; de vises som "Kontakt Kurt". Gæt aldrig.
+4. **Billeder:** træk mobilbillederne ind i **Råbilleder** på én gang. Når studiebillederne er klar: **Forsidebillede (skråt forfra)** og resten i **Galleri** (flere filer ad gangen, træk for rækkefølge).
 5. **Tekst:** kort tekst (1–2 linjer), salgsbeskrivelse og højdepunkter.
 6. **Specifikationer:** én linje pr. oplysning, med kilde "Kurt" eller "Typisk for modellen".
 7. Tryk **Publish**. Bilen er på sitet efter et par minutter.
 
 **Når en bil er solgt:** sæt Status til **Solgt** og tryk Publish. Bilen flytter til "Solgte biler" og viser ingen pris. Slet den ikke; den virker som reference og holder sin webadresse.
+
+## Forsidens stregtegninger
+
+Hover på portalerne "Klassiske biler" / "Eksklusive biler" får en stregtegnet Ferrari 308 GTS (sort) / Lamborghini Gallardo LP560-4 (hvid) til at køre ind i nederste højre hjørne med rullende hjul og røgpust; ved mouse leave bakker den ud. Touch: kører ind én gang ved scroll. Reduced motion: fader ind. Kode: `src/components/Portals.astro`; SVG'er: `public/drawings/` (hentes først, når portalerne nærmer sig skærmen).
+Metode (2026-11-20): Higgsfield (GPT Image 2.6) lavede streg efter frit licenserede sidefotos fra Wikimedia Commons (CC BY 2.0, krediteret på privatlivspolitik-siden). AI-stregen afveg nogle % i proportioner, så den blev trukket på plads med en stykkevis lineær warp efter målepunkter fra fotoet (næse, hjulcentre, hale, tag, jord) og kontrolleret ved overlay; hjulene er separate grupper (`.car-wheel`) med uniform skala, så de kan rotere. `--spin` = 118 % kørsel × viewBox-bredde / hjulradius.
 
 ## SEO
 

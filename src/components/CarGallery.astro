@@ -66,7 +66,14 @@ const visibleThumbs = 6;
 </div>
 
 <style>
-  .gallery { display: grid; gap: 10px; }
+  /* Billedet (3:2) må aldrig være højere end skærmen: bredden begrænses, så hele bilen kan ses. */
+  .gallery {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    max-width: max(280px, calc((100svh - var(--header-h) - 120px) * 1.5));
+    margin-inline: auto;
+  }
   .gallery__main { position: relative; display: block; cursor: zoom-in; }
   .gallery__main--ph { cursor: default; }
   .gallery__frame {

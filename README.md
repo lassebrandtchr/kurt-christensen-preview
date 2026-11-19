@@ -21,6 +21,18 @@ Kopiér `.env.example` til `.env` og udfyld efter behov. Uden `.env` virker alt,
 | `SANITY_PROJECT_ID` | Sættes den, hentes bilerne fra Sanity i stedet for `src/content/cars/` |
 | `SANITY_DATASET` | Standard `production` |
 | `SANITY_READ_TOKEN` | Kun hvis datasættet er privat. Gemmes i hostingens miljøvariabler, aldrig i repoet |
+| `PUBLIC_NOINDEX` | `true` = preview: `noindex, nofollow` på alle sider og `Disallow: /` i robots.txt |
+| `SITE_BASE` | Undermappe, når sitet ligger under en sti (fx `/kurt-christensen-preview`). Tom på eget domæne |
+
+## Preview til fremvisning (GitHub Pages)
+
+Adresse: https://lassebrandtchr.github.io/kurt-christensen-preview/ (repo `lassebrandtchr/kurt-christensen-preview`, offentligt). Sitet er lukket for søgemaskiner (`noindex, nofollow` + `Disallow: /`), men alle med linket kan se det.
+
+```bash
+npm run deploy:preview   # bygger fra Sanity med base-sti + noindex og pusher til grenen gh-pages
+```
+
+Kør den igen, når Kurt har ændret noget i Sanity; preview'et opdaterer ikke sig selv. Kildekoden ligger på `main`. Alle interne links går gennem `u()` i `src/lib/site.ts`, så sitet virker både i undermappe og på eget domæne. GitHub Pages er kun til fremvisning; det rigtige site skal på Netlify eller Cloudflare.
 
 ## Sider
 
@@ -31,7 +43,6 @@ Kopiér `.env.example` til `.env` og udfyld efter behov. Uden `.env` virker alt,
 | `/eksklusive-biler/` | Det eksklusive univers (sort/guld/sølv, bred Archivo, præcis bevægelse) |
 | `/biler-til-salg/` | Alle biler, filtre (univers, mærke, til salg/solgte) + sortering. Årgang/pris-filtre vises først når der er mere end 8 biler til salg |
 | `/biler/<slug>/` | Bilkort i bilens univers: galleri + lightbox, prisboks, nøgletal, specs, beskrivelse, forespørgsel, relaterede biler |
-| `/saelg-din-bil/` | Formular (billeder sendes på mail til Kurt) |
 | `/om-kurt/` | Om Kurt + `#solgte-biler` |
 | `/kontakt/` | Kontaktinfo, formular, skematisk kort (ingen Google-embed = ingen cookies) |
 | `/privatlivspolitik/` | Kort privatlivspolitik (skal godkendes af Kurt) |
@@ -66,7 +77,7 @@ Kør `npm run sync-images` og derefter `npm run build`, hver gang der kommer nye
 
 Spam-beskyttelse: honeypot-feltet `_gotcha`. Validering sker i browseren med danske fejlbeskeder.
 
-> **Ingen billed-upload (Lasses beslutning 2026-11-19).** Upload kræver betalt Formspree, så feltet er fjernet fra "Sælg din bil". I stedet står der, at billeder sendes til Kurts e-mail. Komponenterne understøtter stadig `type="file"` og `multipart`, hvis I senere opgraderer.
+> **Ingen "Sælg din bil"-side (Lasses beslutning 2026-11-19).** Har en kunde en unik klassisk eller eksklusiv bil, bruger de kontaktformularen med emnet "Jeg har en unik bil", og Kurt tager selv stilling. Forsiden linker dertil med emnet udfyldt (`/kontakt/?emne=…`).
 
 ## CMS: Sanity (så Kurt selv kan tilføje biler)
 

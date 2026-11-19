@@ -1,0 +1,148 @@
+{
+  "slug": "porsche-boxster-27-1999",
+  "make": "Porsche",
+  "model": "Boxster",
+  "variant": "2.7",
+  "year": 1999,
+  "km": 151000,
+  "price": 125000,
+  "priceNote": "Prisen er uden dansk registreringsafgift",
+  "status": "til-salg",
+  "univers": "klassisk",
+  "featured": false,
+  "fuel": "Benzin",
+  "gearbox": "Manuel",
+  "hp": null,
+  "engine": "2,7 boxer",
+  "color": "Gul",
+  "seoTitle": "Porsche Boxster 2.7 1999 til salg | Kurt Christensen",
+  "metaDescription": "Gul Porsche Boxster 2.7 fra 1999 med manuel gearkasse og 151.000 km. Midtmotor og kaleche. 125.000 kr. uden dansk registreringsafgift.",
+  "h1": "Porsche Boxster 2.7 1999 – manuel, født gul",
+  "teaser": "Gul Porsche Boxster 2.7 fra 1999 med manuel gearkasse og 151.000 km. Midtmotor, boxer-sekser og kaleche – født gul.",
+  "description": "## Født gul – og født til åbne landeveje\n\nDenne Boxster er født gul, og farven klæder den. Med 2,7-liters boxermotor, manuel gearkasse og 151.000 km er det en ægte førerbil og en af de mest tilgængelige veje ind i Porsche-verdenen. Her er der ingen filtre mellem dig og vejen: kaleche ned, motoren lige bag nakken og et gearskifte, du selv står for.\n\n### Om modellen (typisk for modellen)\n\nDen første Boxster, type 986, var bilen, der for alvor bragte Porsche ind i en ny tid. Den delte mange komponenter med den samtidige 911 af typen 996 – blandt andet forlygter, forskærme, frontklap og døre. Motoren sidder midt i bilen, lige bag sæderne, og det giver en balance, som mange entusiaster sætter højere end ren effekt.\n\nTil modelåret 2000, med produktionsstart i efteråret 1999, blev den oprindelige 2,5-liters motor afløst af en 2,7-liters boxer-sekser på 2.687 cm³. Den yder 220 hk ved 6.400 o/min og 260 Nm ved 4.750 o/min. Med den manuelle 5-trins gearkasse opgav Porsche 0–100 km/t til 6,6 sekunder og en tophastighed på 250 km/t. Boxsteren blev bygget både i Zuffenhausen og hos Valmet i Uusikaupunki i Finland, og der blev produceret 40.937 eksemplarer af 2,7-udgaven før faceliftet.\n\nEn tidlig Boxster er i dag en moderne klassiker: enkel, mekanisk og fuld af kørefornøjelse, uden at kræve et 911-budget.\n\n### Kurts bil\n\n- Årgang 1999\n- 151.000 km\n- 2,7 boxer\n- Manuel gearkasse\n- Gul – født gul\n- Pris 125.000 kr. – prisen er uden dansk registreringsafgift\n\nHistorik og øvrige detaljer får du hos Kurt. Ring på 24 61 10 19 og aftal en prøvetur fra showroomet i Bramming.\n\n*Tekniske data mærket \"typisk for modellen\" stammer fra offentlige kilder om modellen og er ikke målt på den konkrete bil. Ring til Kurt for bilspecifikke oplysninger.*\n",
+  "highlights": [
+    "Født gul – en farve, der passer til en Boxster",
+    "2,7-liters boxer-sekser",
+    "Manuel gearkasse",
+    "Midtmotor og kaleche (typisk for modellen)",
+    "220 hk og 260 Nm (typisk for 2,7-modellen)",
+    "151.000 km",
+    "Prisen er uden dansk registreringsafgift"
+  ],
+  "specs": [
+    {
+      "label": "Mærke og model",
+      "value": "Porsche Boxster 2.7",
+      "source": "kurt"
+    },
+    {
+      "label": "Årgang",
+      "value": "1999",
+      "source": "kurt"
+    },
+    {
+      "label": "Kilometer",
+      "value": "151.000 km",
+      "source": "kurt"
+    },
+    {
+      "label": "Pris",
+      "value": "125.000 kr.",
+      "source": "kurt"
+    },
+    {
+      "label": "Afgift",
+      "value": "Prisen er uden dansk registreringsafgift",
+      "source": "kurt"
+    },
+    {
+      "label": "Farve",
+      "value": "Gul",
+      "source": "kurt"
+    },
+    {
+      "label": "Motor",
+      "value": "2,7 boxer",
+      "source": "kurt"
+    },
+    {
+      "label": "Gearkasse",
+      "value": "Manuel",
+      "source": "kurt"
+    },
+    {
+      "label": "Drivmiddel",
+      "value": "Benzin",
+      "source": "model"
+    },
+    {
+      "label": "Slagvolumen",
+      "value": "2.687 cm³ (seks cylindre, midtmonteret)",
+      "source": "model"
+    },
+    {
+      "label": "Effekt",
+      "value": "220 hk ved 6.400 o/min",
+      "source": "model"
+    },
+    {
+      "label": "Moment",
+      "value": "260 Nm ved 4.750 o/min",
+      "source": "model"
+    },
+    {
+      "label": "Gearkasse (modellen)",
+      "value": "5-trins manuel",
+      "source": "model"
+    },
+    {
+      "label": "Træk",
+      "value": "Baghjulstræk",
+      "source": "model"
+    },
+    {
+      "label": "0–100 km/t",
+      "value": "6,6 sek. (manuel)",
+      "source": "model"
+    },
+    {
+      "label": "Tophastighed",
+      "value": "250 km/t",
+      "source": "model"
+    },
+    {
+      "label": "Vægt",
+      "value": "Ca. 1.275 kg (manuel)",
+      "source": "model"
+    },
+    {
+      "label": "Karrosseri",
+      "value": "Roadster med kaleche",
+      "source": "model"
+    },
+    {
+      "label": "Produktion",
+      "value": "Zuffenhausen og Valmet (Finland); 2,7-motoren fra modelår 2000",
+      "source": "model"
+    },
+    {
+      "label": "Historik",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    }
+  ],
+  "images": [
+    {
+      "src": "../../assets/cars/porsche-boxster-27-1999/01_skraat-forfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-boxster-27-1999/02_forfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-boxster-27-1999/03_bagfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-boxster-27-1999/04_kabine.webp"
+    }
+  ]
+}

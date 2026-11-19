@@ -1,0 +1,119 @@
+---
+/**
+ * Bilkortets galleri: stort primærbillede (scroll-expanding på desktop) + thumbs.
+ * Klik åbner PhotoSwipe-lightbox (tastatur, swipe, pinch-zoom). 0 billeder → logo-placeholder.
+ */
+import { getImage, Picture } from 'astro:assets';
+import CarImage from './CarImage.astro';
+import Icon from './Icon.astro';
+import type { Car } from '../lib/cars';
+
+interface Props { car: Car; }
+const { car } = Astro.props;
+
+const items = await Promise.all(
+  car.images.map(async (img) => {
+    if (img.kind === 'local') {
+      const w = Math.min(2048, img.src.width);
+      const full = await getImage({ src: img.src, width: w, format: 'webp', quality: 82 });
+      return { href: full.src, width: w, height: Math.round((img.src.height / img.src.width) * w), alt: img.alt, img };
+    }
+    const w = Math.min(2048, img.width);
+    return { href: `${img.url}?w=${w}&auto=format&q=82`, width: w, height: Math.round((img.height / img.width) * w), alt: img.alt, img };
+  }),
+);
+const visibleThumbs = 6;
+---
+<div class="gallery" data-gallery-root>
+  {items.length === 0 ? (
+    <div class="gallery__main gallery__main--ph">
+      <CarImage image={null} alt={`${car.name} ${car.year}`} ratio="3 / 2" vt={`car-${car.slug}`} placeholderLabel="Studiebilleder af bilen er på vej" />
+    </div>
+  ) : (
+    <div class="pswp-gallery" data-gallery>
+      <a
+        href={items[0].href}
+        data-pswp-width={items[0].width}
+        data-pswp-height={items[0].height}
+        class="gallery__main"
+        data-expand
+        aria-label={`Åbn billedgalleri (${items.length} billeder): ${items[0].alt}`}
+      >
+        <CarImage image={items[0].img} alt={items[0].alt} ratio="3 / 2" sizes="(min-width: 1320px) 1320px, 100vw" priority vt={`car-${car.slug}`} />
+        <span class="gallery__frame" aria-hidden="true"></span>
+        <span class="gallery__open"><Icon name="expand" /> {items.length} billeder</span>
+      </a>
+      {items.length > 1 && (
+        <ul class="gallery__thumbs" role="list">
+          {items.slice(1).map((it, i) => (
+            <li class:list={{ 'is-extra': i >= visibleThumbs }}>
+              <a href={it.href} data-pswp-width={it.width} data-pswp-height={it.height} aria-label={`Åbn billede ${i + 2} af ${items.length}`}>
+                {it.img.kind === 'local' ? (
+                  <Picture src={it.img.src} alt={it.alt} widths={[240, 480]} sizes="(min-width: 1024px) 200px, 30vw" formats={['avif']} fallbackFormat="webp" loading="lazy" quality={70} />
+                ) : (
+                  <img src={`${it.img.url}?w=480&auto=format&q=70`} alt={it.alt} width={480} height={Math.round((it.img.height / it.img.width) * 480)} loading="lazy" decoding="async" />
+                )}
+                {i === visibleThumbs - 1 && items.length - 1 > visibleThumbs && (
+                  <span class="gallery__more">+{items.length - 1 - visibleThumbs}</span>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )}
+</div>
+
+<style>
+  .gallery { display: grid; gap: 10px; }
+  .gallery__main { position: relative; display: block; cursor: zoom-in; }
+  .gallery__main--ph { cursor: default; }
+  .gallery__frame {
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(201, 164, 106, 0.6);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 400ms;
+  }
+  .gallery__main:hover .gallery__frame { opacity: 1; }
+  .gallery__open {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(10, 10, 11, 0.75);
+    color: var(--champagne);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    backdrop-filter: blur(6px);
+  }
+  .gallery__open :global(svg) { width: 16px; height: 16px; }
+  .gallery__thumbs {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  @media (min-width: 720px) { .gallery__thumbs { grid-template-columns: repeat(6, 1fr); } }
+  .gallery__thumbs li.is-extra { display: none; }
+  .gallery__thumbs a { position: relative; display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--ink); }
+  .gallery__thumbs :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 500ms var(--ease-out), opacity 300ms; opacity: 0.85; }
+  .gallery__thumbs a:hover :global(img) { transform: scale(1.05); opacity: 1; }
+  .gallery__more {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(10, 10, 11, 0.65);
+    color: var(--champagne);
+    font-size: var(--fs-md);
+    font-weight: 600;
+  }
+</style>

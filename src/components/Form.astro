@@ -1,0 +1,83 @@
+---
+/**
+ * Formular-ramme: Formspree (PUBLIC_FORMSPREE_ID), honeypot, samtykke, status-beskeder.
+ * Felterne leveres via <slot />. Validering + afsendelse håndteres i src/scripts/forms.ts.
+ */
+import { SITE, u } from '../lib/site';
+interface Props {
+  id: string;
+  formName: string; // fx "Kontakt", "Forespørgsel"
+  subject: string;
+  submitLabel: string;
+  successText: string;
+  errorText?: string;
+  consentText: string;
+  multipart?: boolean;
+  class?: string;
+}
+const {
+  id,
+  formName,
+  subject,
+  submitLabel,
+  successText,
+  errorText = `Beskeden kunne desværre ikke sendes. Prøv igen om lidt, eller ring direkte til Kurt på ${SITE.phone}.`,
+  consentText,
+  multipart = false,
+  class: cls,
+} = Astro.props;
+const formspreeId = (import.meta.env.PUBLIC_FORMSPREE_ID as string | undefined)?.trim() || '';
+const action = formspreeId ? `https://formspree.io/f/${formspreeId}` : '';
+---
+<form
+  id={id}
+  class:list={['form', cls]}
+  method="POST"
+  action={action || undefined}
+  enctype={multipart ? 'multipart/form-data' : undefined}
+  novalidate
+  data-form
+  data-endpoint={action}
+  data-error-text={errorText}
+>
+  <input type="hidden" name="_subject" value={subject} data-subject />
+  <input type="hidden" name="formular" value={formName} />
+  <div class="hp-field" aria-hidden="true">
+    <label for={`${id}-website`}>Lad dette felt være tomt</label>
+    <input id={`${id}-website`} type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <slot />
+
+  <div class="field" data-field>
+    <label class="check">
+      <input type="checkbox" name="samtykke" value="ja" required data-msg="Du skal acceptere, at vi må bruge dine oplysninger til at svare dig." />
+      <span>{consentText} <a href={u("/privatlivspolitik/")}>Læs privatlivspolitikken</a>.</span>
+    </label>
+    <p class="field-error" data-error aria-live="polite"></p>
+  </div>
+
+  <div class="form__actions">
+    <button type="submit" class="btn btn--gold" data-submit>
+      <span data-submit-label>{submitLabel}</span>
+    </button>
+    <p class="form__alt">Hellere snakke? Ring <a href={SITE.phoneHref} class="tabular">{SITE.phone}</a></p>
+  </div>
+
+  <div class="form-status" role="status" aria-live="polite" tabindex="-1" hidden data-status-ok>
+    {successText}
+  </div>
+  <div class="form-status form-status--error" role="alert" tabindex="-1" hidden data-status-error>
+    <span data-status-error-text>{errorText}</span> <a href={SITE.phoneHref}>Ring {SITE.phone}</a>
+  </div>
+</form>
+
+<style>
+  .form__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+  .form__alt { font-size: var(--fs-sm); color: var(--fg-muted); }
+  .form__alt a { color: var(--fg-soft); font-weight: 600; }
+</style>
+
+<script>
+  import '../scripts/forms.ts';
+</script>

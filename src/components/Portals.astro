@@ -1,0 +1,134 @@
+---
+import { u } from '../lib/site';
+import type { Car } from '../lib/cars';
+import Icon from './Icon.astro';
+interface Props { cars: Car[]; }
+const { cars } = Astro.props;
+const count = (u: 'klassisk' | 'eksklusiv') => {
+  const all = cars.filter((c) => c.univers === u);
+  const forSale = all.filter((c) => c.status !== 'solgt').length;
+  const sold = all.length - forSale;
+  return `${forSale} til salg${sold ? ` · ${sold} solgt` : ''}`;
+};
+---
+<section class="portals" aria-labelledby="portals-title">
+  <h2 id="portals-title" class="sr-only">Vælg univers</h2>
+  <a href={u("/klassiske-biler/")} class="portal portal--klassisk" data-univers="klassisk">
+    <span class="portal__grain" aria-hidden="true"></span>
+    <span class="stamp stamp--round portal__stamp" aria-hidden="true">Klassisk<br />· Bramming ·<br />Ribevej 11</span>
+    <span class="portal__count">{count('klassisk')}</span>
+    <span class="portal__title">Klassiske biler</span>
+    <span class="portal__teaser">Biler med patina, mekanik og en historie at fortælle. Fra 70'er-Ferrari til amerikanske V8-pickupper.</span>
+    <span class="portal__cta">Gå til klassiske biler <Icon name="arrow" /></span>
+  </a>
+  <a href={u("/eksklusive-biler/")} class="portal portal--eksklusiv" data-univers="eksklusiv">
+    <span class="portal__lines" aria-hidden="true"></span>
+    <span class="portal__count">{count('eksklusiv')}</span>
+    <span class="portal__title"><span class="metal-text shine">Eksklusive biler</span></span>
+    <span class="portal__teaser">Moderne præcision, turbokraft og firehjulstræk. Sportsvogne og gran turismo til den, der vil have det bedste.</span>
+    <span class="portal__cta">Gå til eksklusive biler <Icon name="arrow" /></span>
+  </a>
+</section>
+
+<style>
+  .portals { display: grid; grid-template-columns: 1fr; }
+  @media (min-width: 900px) {
+    .portals { grid-template-columns: 1fr 1fr; transition: grid-template-columns 700ms var(--ease-out); }
+    .portals:has(.portal--klassisk:hover) { grid-template-columns: 1.15fr 0.85fr; }
+    .portals:has(.portal--eksklusiv:hover) { grid-template-columns: 0.85fr 1.15fr; }
+  }
+  .portal {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 16px;
+    min-height: clamp(420px, 62vh, 640px);
+    padding: clamp(28px, 5vw, 72px);
+    text-decoration: none;
+    background: var(--bg);
+    color: var(--fg);
+    isolation: isolate;
+  }
+  .portal:focus-visible { outline-offset: -6px; }
+  .portal__count {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .portal__title {
+    font-family: var(--display-font);
+    font-style: var(--display-style);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    text-transform: var(--display-case);
+    font-size: clamp(2.6rem, 1.6rem + 4vw, 5.5rem);
+    line-height: 0.98;
+    letter-spacing: var(--display-track);
+  }
+  .portal__teaser { max-width: 40ch; color: var(--fg-soft); font-size: 1.0625rem; }
+  .portal__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg);
+  }
+  .portal__cta :global(svg) { width: 20px; height: 20px; transition: transform 300ms var(--ease-out); }
+  .portal:hover .portal__cta :global(svg) { transform: translateX(6px); }
+
+  /* Klassisk: papir, korn, stempel, blød bevægelse */
+  .portal--klassisk {
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.5), transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(138, 106, 58, 0.18), transparent 60%),
+      var(--paper);
+  }
+  .portal--klassisk .portal__title { font-size: clamp(3rem, 1.8rem + 4.6vw, 6.25rem); }
+  .portal__grain {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .4  0 0 0 0 .3  0 0 0 0 .2  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .portal__stamp {
+    position: absolute;
+    top: clamp(24px, 4vw, 56px);
+    right: clamp(24px, 4vw, 56px);
+    transform: rotate(-12deg);
+    transition: transform 1200ms var(--ease-out);
+  }
+  .portal--klassisk:hover .portal__stamp { transform: rotate(-4deg) scale(1.04); }
+
+  /* Eksklusiv: sort, guld-rasterlinjer, metal */
+  .portal--eksklusiv {
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 30%, rgba(215, 217, 220, 0.07), transparent 70%),
+      var(--ink);
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 900px) { .portal--eksklusiv { border-top: 0; border-left: 1px solid var(--line); } }
+  .portal__lines {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: linear-gradient(90deg, rgba(201, 164, 106, 0.09) 1px, transparent 1px);
+    background-size: calc(100% / 6) 100%;
+    -webkit-mask-image: linear-gradient(180deg, #000, transparent 85%);
+    mask-image: linear-gradient(180deg, #000, transparent 85%);
+    transition: background-size 500ms var(--ease-inout);
+  }
+  .portal--eksklusiv:hover .portal__lines { background-size: calc(100% / 8) 100%; }
+  .portal--eksklusiv .portal__teaser { color: var(--silver); }
+</style>

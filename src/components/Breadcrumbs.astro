@@ -1,0 +1,20 @@
+---
+import { u } from '../lib/site';
+interface Props { items: { name: string; path: string }[]; }
+const { items } = Astro.props;
+---
+<nav class="crumbs" aria-label="Brødkrumme">
+  <ol>
+    {items.map((it, i) => (
+      <li>
+        {i < items.length - 1 ? <a href={u(it.path)}>{it.name}</a> : <span aria-current="page">{it.name}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+<style>
+  .crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 0; padding: 0; margin: 0; font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 112%; color: var(--fg-muted); }
+  .crumbs li + li::before { content: '/'; margin-inline: 10px; color: var(--accent); }
+  .crumbs a { color: var(--fg-soft); text-decoration: none; }
+  .crumbs a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+</style>

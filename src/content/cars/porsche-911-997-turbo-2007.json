@@ -1,0 +1,146 @@
+{
+  "slug": "porsche-911-997-turbo-2007",
+  "make": "Porsche",
+  "model": "911",
+  "variant": "Turbo (997)",
+  "year": 2007,
+  "km": 72000,
+  "price": 650000,
+  "priceNote": "Prisen er uden dansk registreringsafgift",
+  "status": "til-salg",
+  "univers": "eksklusiv",
+  "featured": false,
+  "fuel": "Benzin",
+  "gearbox": null,
+  "hp": 480,
+  "engine": "3,6 biturbo boxer",
+  "color": "Grå",
+  "seoTitle": "Porsche 911 Turbo (997) 2007 til salg | Kurt Christensen",
+  "metaDescription": "Grå Porsche 911 Turbo (997) fra 2007 med 72.000 km. 3,6 biturbo-boxer med 480 hk. 650.000 kr. uden dansk registreringsafgift. Hos Kurt i Bramming.",
+  "h1": "Porsche 911 Turbo (997) 2007 – 480 hk, grå",
+  "teaser": "Grå Porsche 911 Turbo (997) fra 2007 med 72.000 km. 3,6-liters biturbo-boxer med 480 hk – supersportsvogn, der kan bruges hver dag.",
+  "description": "## Turbo-911'eren, der kan bruges hver dag\n\nPorsche 911 Turbo har i årtier været målestokken for, hvor hurtig en sportsvogn kan være, uden at den bliver besværlig at leve med. Denne grå 997 Turbo fra 2007 har kørt 72.000 km og leverer netop den oplevelse: voldsom fremdrift, når du beder om den, og ro og komfort resten af tiden.\n\n### Om modellen (typisk for modellen)\n\n997-generationen af 911 Turbo bygger på en 3,6-liters sekscylindret boxermotor med to turboladere. Turboladerne har variabel turbinegeometri (VTG): ledeskovle i turbinen ændrer vinkel efter udstødningsflowet, så motoren reagerer hurtigt ved lave omdrejninger uden at blive kvalt i toppen. Resultatet er 480 hk og 620 Nm – op til 680 Nm med overboost på biler med Sport Chrono.\n\nKraften fordeles via firehjulstræk, og Turbo-modellerne har det brede karrosseri, der er forbeholdt de firehjulstrukne 911'ere. Modellen blev leveret med enten 6-trins manuel gearkasse eller 5-trins Tiptronic S-automatgear. Porsche opgav 0–100 km/t til 3,9 sekunder med manuel kasse og 3,7 sekunder med Tiptronic, mens tophastigheden ligger på 310 km/t.\n\nDet er tal, der stadig imponerer, men det er lige så meget hverdagsegenskaberne, der gør bilen speciel. Firehjulstrækket giver ro på våd asfalt, og motoren er lige så tilfreds med at trille gennem byen som at strække ud på en åben landevej. Det er en bil, man bruger, ikke kun beundrer.\n\n### Kurts bil\n\n- Årgang 2007\n- 72.000 km\n- Grå\n- 3,6 biturbo-boxer med 480 hk\n- Pris 650.000 kr. – prisen er uden dansk registreringsafgift\n\nGearkassetype, udstyr og historik oplyser Kurt gerne. Ring på 24 61 10 19 og aftal en fremvisning i showroomet i Bramming.\n\n*Tekniske data mærket \"typisk for modellen\" stammer fra offentlige kilder om modellen og er ikke målt på den konkrete bil. Ring til Kurt for bilspecifikke oplysninger.*\n",
+  "highlights": [
+    "911 Turbo (997) fra 2007 med 72.000 km",
+    "3,6-liters biturbo-boxer med 480 hk",
+    "Firehjulstræk og bredt Turbo-karrosseri (typisk for modellen)",
+    "VTG-turboladere for hurtigt respons (typisk for modellen)",
+    "0–100 km/t på 3,7–3,9 sek. og 310 km/t ifølge fabrikken (typisk for modellen)",
+    "Elegant grå farve",
+    "Prisen er uden dansk registreringsafgift"
+  ],
+  "specs": [
+    {
+      "label": "Mærke og model",
+      "value": "Porsche 911 Turbo (997)",
+      "source": "kurt"
+    },
+    {
+      "label": "Årgang",
+      "value": "2007",
+      "source": "kurt"
+    },
+    {
+      "label": "Kilometer",
+      "value": "72.000 km",
+      "source": "kurt"
+    },
+    {
+      "label": "Pris",
+      "value": "650.000 kr.",
+      "source": "kurt"
+    },
+    {
+      "label": "Afgift",
+      "value": "Prisen er uden dansk registreringsafgift",
+      "source": "kurt"
+    },
+    {
+      "label": "Farve",
+      "value": "Grå",
+      "source": "kurt"
+    },
+    {
+      "label": "Motor",
+      "value": "3,6 biturbo boxer",
+      "source": "kurt"
+    },
+    {
+      "label": "Effekt",
+      "value": "480 hk",
+      "source": "kurt"
+    },
+    {
+      "label": "Gearkasse",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    },
+    {
+      "label": "Drivmiddel",
+      "value": "Benzin",
+      "source": "model"
+    },
+    {
+      "label": "Slagvolumen",
+      "value": "3.600 cm³",
+      "source": "model"
+    },
+    {
+      "label": "Moment",
+      "value": "620 Nm (680 Nm med overboost på biler med Sport Chrono)",
+      "source": "model"
+    },
+    {
+      "label": "Gearkasser leveret til modellen",
+      "value": "6-trins manuel eller 5-trins Tiptronic S",
+      "source": "model"
+    },
+    {
+      "label": "Træk",
+      "value": "Firehjulstræk",
+      "source": "model"
+    },
+    {
+      "label": "0–100 km/t",
+      "value": "3,9 sek. (manuel) / 3,7 sek. (Tiptronic S)",
+      "source": "model"
+    },
+    {
+      "label": "Tophastighed",
+      "value": "310 km/t",
+      "source": "model"
+    },
+    {
+      "label": "Vægt",
+      "value": "Ca. 1.570 kg",
+      "source": "model"
+    },
+    {
+      "label": "Turboteknik",
+      "value": "To turboladere med variabel turbinegeometri (VTG)",
+      "source": "model"
+    },
+    {
+      "label": "Udstyr / historik",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    }
+  ],
+  "images": [
+    {
+      "src": "../../assets/cars/porsche-911-997-turbo-2007/01_skraat-forfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-911-997-turbo-2007/02_skraat-bagfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-911-997-turbo-2007/03_bagfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-911-997-turbo-2007/04_cockpit.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-911-997-turbo-2007/05_bagsaeder.webp"
+    }
+  ]
+}

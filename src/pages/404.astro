@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { SITE, u } from '../lib/site';
+---
+<BaseLayout title="Siden findes ikke | Kurt Christensen" description="Siden kunne ikke findes. Se Kurts biler til salg eller ring 24 61 10 19." noindex>
+  <section class="section nf">
+    <div class="container nf__inner">
+      <p class="eyebrow">Fejl 404</p>
+      <h1 class="display nf__h1">Den her vej fører ingen steder hen</h1>
+      <p class="lead">Siden findes ikke længere – måske er bilen solgt. Se de biler, der er til salg lige nu, eller ring til Kurt.</p>
+      <div class="nf__ctas">
+        <a href={u("/biler-til-salg/")} class="btn btn--gold">Se biler til salg <Icon name="arrow" /></a>
+        <a href={SITE.phoneHref} class="btn btn--primary"><Icon name="phone" /> Ring {SITE.phone}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .nf { min-height: 60vh; display: grid; align-items: center; }
+  .nf__inner { display: grid; gap: 20px; justify-items: start; }
+  .nf__h1 { font-size: var(--fs-xl); max-width: 18ch; }
+  .nf__ctas { display: flex; flex-wrap: wrap; gap: 12px 16px; }
+</style>

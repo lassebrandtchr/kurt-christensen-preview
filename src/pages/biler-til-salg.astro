@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StockGrid from '../components/StockGrid.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { getCars } from '../lib/cars';
+import { SITE, u } from '../lib/site';
+import { breadcrumbs } from '../lib/schema';
+
+const cars = await getCars();
+const forSale = cars.filter((c) => c.status !== 'solgt');
+const updated = new Intl.DateTimeFormat('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+const site = Astro.site!;
+const crumbs = [{ name: 'Forside', path: '/' }, { name: 'Biler til salg', path: '/biler-til-salg/' }];
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: cars.map((c, i) => ({ '@type': 'ListItem', position: i + 1, url: new URL(u(`/biler/${c.slug}/`), site).href, name: `${c.name} ${c.year}` })),
+};
+---
+<BaseLayout
+  title="Biler til salg – Porsche, Ferrari, V8 | Kurt Christensen"
+  description="Se Kurt Christensens aktuelle udvalg af klassiske og eksklusive biler til salg i Bramming: Porsche, Ferrari og amerikanske V8'ere. Ring 24 61 10 19."
+  jsonLd={[breadcrumbs(site, crumbs), itemList]}
+>
+  <section class="section page-head">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <div class="page-head__row">
+        <h1 class="page-head__h1 display">Klassiske og eksklusive biler til salg</h1>
+        <p class="page-head__count tabular">{forSale.length} {forSale.length === 1 ? 'bil' : 'biler'} på lager · opdateret {updated}</p>
+      </div>
+      <div class="page-head__intro">
+        <p>Her er Kurts aktuelle udvalg af klassiske og eksklusive biler. Hver bil er håndplukket, og hver annonce fortæller ærligt, hvad vi ved om den – fra årgang og kilometer til pris og afgiftsforhold. Tekniske data, der er typiske for modellen, er tydeligt markeret, så du altid kan se forskel på fakta om den konkrete bil og generelle modeldata.</p>
+        <p>Udvalget skifter løbende, og de særlige biler bliver sjældent længe. Ser du en bil, der fanger dit øje, så ring til Kurt på <a href={SITE.phoneHref}>{SITE.phone}</a> og aftal en fremvisning i showroomet i Bramming.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stock-section" aria-label="Lager">
+    <div class="container">
+      {cars.length > 0 ? <StockGrid cars={cars} /> : (
+        <p class="empty">Lige nu er alle biler solgt, men nye er på vej. Ring til Kurt på <a href={SITE.phoneHref}>{SITE.phone}</a>, eller fortæl os, hvad du leder efter.</p>
+      )}
+      <div class="after-grid">
+        <p class="after-grid__girardo">Ikke alt er online. Leder du efter noget bestemt? <a href={SITE.phoneHref}>Ring til Kurt</a>.</p>
+        <p class="after-grid__note">Vi tager forbehold for, at bilen kan være solgt. Ring derfor, inden du kører hjemmefra.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head { padding-bottom: clamp(32px, 4vw, 48px); }
+  .page-head__row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px 32px; margin-top: 24px; }
+  .page-head__h1 { font-size: var(--fs-xl); max-width: 16ch; }
+  .page-head__count { font-size: var(--fs-sm); color: var(--fg-muted); letter-spacing: 0.04em; }
+  .page-head__intro { margin-top: 28px; display: grid; gap: 16px; color: var(--fg-soft); max-width: 70ch; }
+  @media (min-width: 1024px) { .page-head__intro { grid-template-columns: 1fr 1fr; gap: 40px; max-width: none; } }
+  .stock-section { padding-bottom: var(--section-y); }
+  .after-grid { margin-top: clamp(40px, 6vw, 72px); padding-top: 28px; border-top: 1px solid var(--line); display: grid; gap: 10px; text-align: center; }
+  .after-grid__girardo { font-family: var(--f-serif); font-style: italic; font-size: var(--fs-md); color: var(--champagne); }
+  .after-grid__note { font-size: var(--fs-sm); color: var(--fg-muted); }
+  .empty { padding: 48px 0; text-align: center; }
+</style>

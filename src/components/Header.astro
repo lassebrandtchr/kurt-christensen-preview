@@ -1,0 +1,165 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { SITE, u, stripBase } from '../lib/site';
+interface Props { overlay?: boolean; }
+const { overlay = false } = Astro.props;
+const path = stripBase(Astro.url.pathname);
+const nav = [
+  { href: u('/biler-til-salg/'), label: 'Biler til salg', match: ['/biler-til-salg/', '/biler/'] },
+  { href: u('/klassiske-biler/'), label: 'Klassiske', match: ['/klassiske-biler/'] },
+  { href: u('/eksklusive-biler/'), label: 'Eksklusive', match: ['/eksklusive-biler/'] },
+  { href: u('/om-kurt/'), label: 'Om Kurt', match: ['/om-kurt/'] },
+  { href: u('/kontakt/'), label: 'Kontakt', match: ['/kontakt/'] },
+];
+const isActive = (m: string[]) => m.some((p) => path.startsWith(p));
+---
+<header class:list={['site-header', { 'site-header--overlay': overlay }]} data-header>
+  <div class="site-header__inner container">
+    <a href={u("/")} class="site-header__logo" aria-label="Kurt Christensen – til forsiden">
+      <Logo width={168} alt="" />
+    </a>
+    <nav class="site-nav" id="site-nav" aria-label="Hovedmenu" data-nav>
+      <ul>
+        {nav.map((item) => (
+          <li><a href={item.href} aria-current={isActive(item.match) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <a href={SITE.phoneHref} class="site-header__phone" aria-label={`Ring til Kurt på ${SITE.phone}`}>
+      <Icon name="phone" />
+      <span class="tabular">{SITE.phone}</span>
+    </a>
+    <button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+      <span class="sr-only">Menu</span>
+      <span class="burger" aria-hidden="true"><span></span><span></span></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--header-h);
+    background: rgba(10, 10, 11, 0.94);
+    color: var(--text);
+    border-bottom: 1px solid transparent;
+    transition: background 300ms var(--ease-out), border-color 300ms var(--ease-out);
+    color-scheme: dark;
+    --fg: var(--text);
+    --accent: var(--gold);
+  }
+  .site-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 1px;
+    background: var(--gold-hair);
+    opacity: 0.55;
+    transition: opacity 300ms;
+  }
+  .site-header--overlay {
+    position: fixed;
+    left: 0; right: 0;
+    background: linear-gradient(180deg, rgba(10, 10, 11, 0.75), rgba(10, 10, 11, 0));
+  }
+  .site-header--overlay::after { opacity: 0; }
+  .site-header.is-scrolled { background: rgba(20, 20, 22, 0.96); backdrop-filter: blur(10px); }
+  .site-header.is-scrolled::after { opacity: 0.55; }
+  .site-header__inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2vw, 32px);
+  }
+  .site-header__logo { flex: none; display: block; margin-right: auto; }
+  .site-header__logo :global(img) { width: clamp(128px, 14vw, 168px); height: auto; }
+  .site-nav ul { list-style: none; display: flex; gap: clamp(14px, 1.8vw, 28px); }
+  .site-nav a {
+    position: relative;
+    display: inline-block;
+    padding: 6px 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    font-stretch: 112%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--silver);
+    transition: color var(--t-fast);
+  }
+  .site-nav a::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 1px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t-mid) var(--ease-out);
+  }
+  .site-nav a:hover, .site-nav a[aria-current='page'] { color: var(--champagne); }
+  .site-nav a:hover::after, .site-nav a[aria-current='page']::after { transform: scaleX(1); }
+  .site-header__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid rgba(201, 164, 106, 0.55);
+    color: var(--champagne);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    letter-spacing: 0.04em;
+    transition: background var(--t-fast), color var(--t-fast);
+    flex: none;
+  }
+  .site-header__phone:hover { background: var(--gold); color: var(--ink); }
+  .site-header__phone :global(svg) { width: 18px; height: 18px; }
+  .site-header__toggle { display: none; }
+
+  @media (max-width: 1080px) {
+    .site-header__toggle {
+      display: inline-grid;
+      place-items: center;
+      width: 44px; height: 44px;
+      background: none;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      flex: none;
+    }
+    .burger { display: grid; gap: 6px; width: 20px; }
+    .burger span { height: 1.5px; background: var(--champagne); transition: transform 300ms var(--ease-out); }
+    .site-header__toggle[aria-expanded='true'] .burger span:first-child { transform: translateY(3.75px) rotate(45deg); }
+    .site-header__toggle[aria-expanded='true'] .burger span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+    .site-nav {
+      position: fixed;
+      inset: var(--header-h) 0 auto 0;
+      background: var(--charcoal);
+      border-bottom: 1px solid var(--line);
+      padding: 12px var(--gutter) 24px;
+      max-height: calc(100svh - var(--header-h));
+      overflow-y: auto;
+    }
+    :global(.js) .site-nav { display: none; }
+    :global(.js) .site-nav.is-open { display: block; animation: nav-in 300ms var(--ease-out); }
+    .site-nav ul { flex-direction: column; gap: 0; }
+    .site-nav li + li { border-top: 1px solid var(--line); }
+    .site-nav a { display: block; padding: 16px 0; font-size: 1rem; }
+    .site-nav a::after { display: none; }
+  }
+  @media (max-width: 1080px) {
+    :global(html:not(.js)) .site-nav { position: static; }
+  }
+  @media (max-width: 480px) {
+    .site-header__phone { padding: 0 10px; }
+    .site-header__phone span { font-size: 0.875rem; }
+  }
+  @media (max-width: 370px) {
+    .site-header__phone span { display: none; }
+  }
+  @keyframes nav-in { from { opacity: 0; transform: translateY(-8px); } }
+</style>

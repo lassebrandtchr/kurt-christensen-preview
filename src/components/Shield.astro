@@ -1,0 +1,19 @@
+---
+/**
+ * Logoets aflange sekskant-skjold som SVG. To spejlede paths tegnes fra toppens midte.
+ * viewBox 1000×640. Bruges i hero (signatur), som ramme og som vandmærke.
+ */
+interface Props { class?: string; strokeWidth?: number; draw?: boolean; }
+const { class: cls, strokeWidth = 1.5, draw = false } = Astro.props;
+// Venstre halvdel: fra top-midte → venstre skulder → venstre side → bund-venstre → bund-midte
+const left = 'M500 4 L28 96 L28 556 L500 636';
+const right = 'M500 4 L972 96 L972 556 L500 636';
+---
+<svg class:list={['shield', cls, { 'shield--draw': draw }]} viewBox="0 0 1000 640" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path class="shield__path" d={left} pathLength="1" fill="none" stroke="currentColor" stroke-width={strokeWidth} vector-effect="non-scaling-stroke" />
+  <path class="shield__path" d={right} pathLength="1" fill="none" stroke="currentColor" stroke-width={strokeWidth} vector-effect="non-scaling-stroke" />
+</svg>
+<style>
+  .shield { overflow: visible; }
+  .shield__path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+</style>

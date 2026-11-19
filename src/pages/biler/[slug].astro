@@ -1,0 +1,481 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CarGallery from '../../components/CarGallery.astro';
+import CarCard from '../../components/CarCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Form from '../../components/Form.astro';
+import Field from '../../components/Field.astro';
+import Icon from '../../components/Icon.astro';
+import type { Car } from '../../lib/cars';
+import { getCars, relatedCars, priceNoteText, universLabel, universPath, statusLabel } from '../../lib/cars';
+import { SITE, formatPrice, formatKm, nf, u } from '../../lib/site';
+import { renderMarkdown } from '../../lib/markdown';
+import { breadcrumbs, carSchema } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const cars = await getCars();
+  return cars.map((car) => ({ params: { slug: car.slug }, props: { car } }));
+}
+
+interface Props { car: Car; }
+const { car } = Astro.props;
+const all = await getCars();
+const related = relatedCars(car, all, 3);
+const sold = car.status === 'solgt';
+const reserved = car.status === 'reserveret';
+const site = Astro.site!;
+
+const [h1Main, ...h1Rest] = car.h1.split(' – ');
+const h1Sub = h1Rest.join(' – ');
+
+const universName = car.univers === 'klassisk' ? 'Klassiske biler' : 'Eksklusive biler';
+const crumbs = [
+  { name: 'Forside', path: '/' },
+  { name: 'Biler til salg', path: '/biler-til-salg/' },
+  { name: universName, path: universPath[car.univers] },
+  { name: `${car.name} ${car.year}`, path: `/biler/${car.slug}/` },
+];
+
+// Billeder til JSON-LD / OG (absolutte URL'er)
+const imageUrls = await Promise.all(
+  car.images.slice(0, 6).map(async (img) =>
+    img.kind === 'local'
+      ? new URL((await getImage({ src: img.src, width: 1200, format: 'jpeg', quality: 80 })).src, site).href
+      : `${img.url}?w=1200&fm=jpg&q=80`,
+  ),
+);
+const ogImage = imageUrls[0];
+
+// Instrumentbræt: nøgletal (ukendt → "Kontakt Kurt")
+type Gauge = { label: string; value: number | string | null; ticker?: 'year' | 'num'; unit?: string };
+const gauges: Gauge[] = [
+  { label: 'Årgang', value: car.year, ticker: 'year' },
+  { label: 'Kilometer', value: car.km, ticker: 'num', unit: 'km' },
+  { label: 'Hestekræfter', value: car.hp, ticker: 'num', unit: 'hk' },
+  { label: 'Drivmiddel', value: car.fuel },
+  { label: 'Gearkasse', value: car.gearbox },
+  { label: 'Farve', value: car.color },
+];
+
+const descHtml = renderMarkdown(car.description);
+// Pris vises i prisboksen (fra feltet `price`), så den kan ikke komme ud af trit i spec-tabellen.
+const specs = car.specs.filter((s) => !/^pris$/i.test(s.label.trim()));
+const enquiryMsg = sold
+  ? `Jeg leder efter en bil, der minder om ${car.name} ${car.year}.`
+  : `Jeg er interesseret i ${car.name}, ${car.year}.`;
+const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christensen: ${new URL(u(`/biler/${car.slug}/`), site).href}`);
+---
+<BaseLayout
+  title={car.seoTitle}
+  description={car.metaDescription}
+  univers={car.univers}
+  ogImage={ogImage}
+  ogType="product"
+  jsonLd={[carSchema(site, car, imageUrls), breadcrumbs(site, crumbs)]}
+  bodyClass="has-mobile-bar"
+>
+  <article class="car" data-univers={car.univers}>
+    <div class="container car__top">
+      <Breadcrumbs items={crumbs.slice(1)} />
+      <a href={u(universPath[car.univers])} class="car__univers-link">{universLabel[car.univers]} univers</a>
+    </div>
+
+    <div class="container car__gallery">
+      <CarGallery car={car} />
+    </div>
+
+    <div class="container car__layout">
+      <div class="car__main">
+        <header class="car__head">
+          <p class="eyebrow">{car.make} · {car.year}{car.status !== 'til-salg' && <span class:list={['car__status', { 'is-sold': sold }]}>{statusLabel[car.status]}</span>}</p>
+          <h1 class="car__h1">
+            <span class="car__h1-main metal-text shine">{h1Main}</span>
+            {h1Sub && <span class="car__h1-sub">– {h1Sub}</span>}
+          </h1>
+          {car.teaser && <p class="car__teaser">{car.teaser}</p>}
+          {!sold && (
+            <div class="car__price-mobile">
+              <p class="price tabular">{formatPrice(car.price) ?? 'Pris efter aftale'}</p>
+              <p class="muted">{priceNoteText(car)}</p>
+            </div>
+          )}
+        </header>
+
+        <section class="gauges" aria-label="Nøgletal">
+          <dl class="gauges__grid">
+            {gauges.map((g, i) => (
+              <div class="gauge reveal" style={`--i:${i}`}>
+                <dt>{g.label}</dt>
+                <dd>
+                  {g.value == null ? (
+                    <a href={SITE.phoneHref} class="unknown">Kontakt Kurt</a>
+                  ) : g.ticker && typeof g.value === 'number' ? (
+                    <span class="gauge__num tabular">
+                      <span data-ticker data-to={g.value} data-format={g.ticker === 'year' ? 'year' : undefined}>{g.ticker === 'year' ? g.value : nf.format(g.value)}</span>
+                      {g.unit && <small> {g.unit}</small>}
+                    </span>
+                  ) : (
+                    <span class="gauge__text">{g.value}</span>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {car.highlights.length > 0 && (
+          <section class="car__section reveal" aria-labelledby="hl-title">
+            <h2 id="hl-title" class="car__h2">Højdepunkter</h2>
+            <ul class="highlights" role="list">
+              {car.highlights.map((h) => <li>{h}</li>)}
+            </ul>
+          </section>
+        )}
+
+        {specs.length > 0 && (
+          <section class="car__section reveal" aria-labelledby="spec-title">
+            <h2 id="spec-title" class="car__h2">Specifikationer</h2>
+            <dl class="specs">
+              {specs.map((s) => (
+                <div class="spec">
+                  <dt>{s.label}{s.source === 'model' && <span class="spec__src" title="Typisk for modellen – ikke målt på den konkrete bil">Typisk for modellen</span>}</dt>
+                  <dd>
+                    {!s.value || /^kontakt kurt$/i.test(s.value.trim()) ? (
+                      <a href={SITE.phoneHref} class="unknown"><Icon name="phone" /> Kontakt Kurt</a>
+                    ) : (
+                      s.value
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p class="car__fine">Tekniske data mærket "typisk for modellen" stammer fra offentlige kilder om modellen og er ikke målt på den konkrete bil.</p>
+          </section>
+        )}
+      </div>
+
+      <aside class="car__aside" aria-label={sold ? 'Bilen er solgt' : 'Pris og kontakt'}>
+        <div class="pricebox">
+          {sold ? (
+            <>
+              <p class="pricebox__label">Status</p>
+              <p class="pricebox__sold">Solgt</p>
+              <p class="pricebox__note">Leder du efter en lignende bil? Kontakt Kurt – han holder øje med markedet.</p>
+            </>
+          ) : (
+            <>
+              <p class="pricebox__label">{reserved ? 'Reserveret · pris' : 'Pris'}</p>
+              <p class="pricebox__price tabular">{formatPrice(car.price) ?? 'Pris efter aftale'}</p>
+              <p class="pricebox__note">{priceNoteText(car)}</p>
+            </>
+          )}
+          <hr class="rule-gold" />
+          <div class="pricebox__ctas">
+            <a href={SITE.phoneHref} class="btn btn--primary btn--block magnetic"><Icon name="phone" /> Ring til Kurt – <span class="tabular">{SITE.phone}</span></a>
+            <a href="#foresporgsel" class="btn btn--secondary btn--block">{sold ? 'Skriv til Kurt' : 'Send forespørgsel'}</a>
+            {!sold && <a href="#foresporgsel" class="btn btn--secondary btn--block" data-book>Book fremvisning</a>}
+          </div>
+          <p class="pricebox__who">Kurt Christensen · {SITE.street}, {SITE.city}</p>
+          <p class="pricebox__share">
+            Del:
+            <button type="button" class="share-btn" data-copy-link>Kopiér link</button>
+            <a href={`sms:?&body=${shareText}`}>SMS</a>
+            <a href={`mailto:?subject=${encodeURIComponent(`${car.name} ${car.year}`)}&body=${shareText}`}>E-mail</a>
+            <span class="share-ok" role="status" aria-live="polite" data-copy-status></span>
+          </p>
+          {!sold && <p class="pricebox__fine">Vi tager forbehold for, at bilen kan være solgt. Ring derfor, inden du kører hjemmefra.</p>}
+        </div>
+      </aside>
+    </div>
+
+    {descHtml && (
+      <section class="car-desc" aria-label="Om bilen">
+        <div class="container car-desc__inner">
+          <p class="eyebrow">Om bilen</p>
+          <div class="prose car-desc__prose" set:html={descHtml} />
+        </div>
+      </section>
+    )}
+
+    <section class="section enquiry" id="foresporgsel-sektion" aria-labelledby="enq-title">
+      <div class="container enquiry__grid">
+        <div class="enquiry__intro">
+          <p class="eyebrow">Forespørgsel</p>
+          <h2 id="enq-title" class="car__h2 enquiry__h">{sold ? 'Leder du efter noget lignende?' : `Skriv om ${car.name}`}</h2>
+          <p class="muted">{sold
+            ? 'Fortæl Kurt, hvad du leder efter. Det hurtigste er at ringe, men du er også velkommen til at skrive.'
+            : 'Har du spørgsmål til bilen, eller vil du aftale en fremvisning? Kurt svarer personligt. Det hurtigste er at ringe, men du er også velkommen til at skrive.'}</p>
+          <a href={SITE.phoneHref} class="enquiry__phone tabular"><Icon name="phone" /> {SITE.phone}</a>
+        </div>
+        <Form
+          id="foresporgsel"
+          formName="Forespørgsel om bil"
+          subject={`Forespørgsel: ${car.name} ${car.year}`}
+          submitLabel="Send forespørgsel"
+          successText={`Tak for din besked. Kurt vender personligt tilbage hurtigst muligt. Har du travlt, så ring på ${SITE.phone}.`}
+          consentText="Jeg accepterer, at Kurt Christensen bruger mine oplysninger til at besvare min henvendelse."
+        >
+          <input type="hidden" name="bil_url" value={new URL(u(`/biler/${car.slug}/`), site).href} />
+          <div class="form-grid">
+            <Field form="foresporgsel" name="navn" label="Navn" required autocomplete="name" placeholder="Dit fulde navn" />
+            <Field form="foresporgsel" name="telefon" label="Telefon" type="tel" required autocomplete="tel" inputmode="tel" />
+            <Field form="foresporgsel" name="email" label="E-mail" type="email" required autocomplete="email" placeholder="navn@eksempel.dk" />
+            <Field form="foresporgsel" name="emne" label="Emne" type="select" required value="Spørgsmål til en bil" options={['Spørgsmål til en bil', 'Fremvisning', 'Andet']} msg="Vælg venligst et emne." />
+            <Field form="foresporgsel" name="bil" label="Hvilken bil drejer det sig om?" value={`${car.name} ${car.year}`} />
+            {!sold && <Field form="foresporgsel" name="oensket_dato" label="Ønsket dato for fremvisning" type="date" hint="Valgfrit – Kurt bekræfter tidspunktet." />}
+            <Field form="foresporgsel" name="byttebil" label="Har du en bil i bytte?" span2 placeholder="Mærke, model og årgang (valgfrit)" />
+            <Field form="foresporgsel" name="besked" label="Besked" type="textarea" required span2 value={enquiryMsg} />
+          </div>
+        </Form>
+      </div>
+    </section>
+
+    {related.length > 0 && (
+      <section class="section related" aria-labelledby="rel-title">
+        <div class="container">
+          <h2 id="rel-title" class="hairline-title section-title related__title">Du kan også lide</h2>
+          <div class="related__grid">
+            {related.map((c, i) => <CarCard car={c} index={i} />)}
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+
+  <!-- Mobil: sticky bundbar -->
+  <div class="mobile-bar" slot="after">
+    <a href={SITE.phoneHref} class="btn btn--primary"><Icon name="phone" /> Ring</a>
+    <a href="#foresporgsel" class="btn btn--secondary">{sold ? 'Skriv' : 'Forespørg'}</a>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../../scripts/car.ts';
+</script>
+
+<style>
+  .car { padding-top: clamp(20px, 3vw, 36px); }
+  .car__top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 24px; margin-bottom: 20px; }
+  .car__univers-link {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .car__univers-link:hover { text-decoration: underline; }
+
+  .car__layout {
+    display: grid;
+    gap: clamp(32px, 5vw, 72px);
+    margin-top: clamp(32px, 5vw, 64px);
+    align-items: start;
+  }
+  @media (min-width: 1024px) { .car__layout { grid-template-columns: 7fr 5fr; } }
+
+  .car__head { display: grid; gap: 16px; }
+  .car__status {
+    margin-left: 12px;
+    padding: 3px 10px;
+    background: var(--champagne);
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .car__status.is-sold { background: var(--red); color: #fff; }
+  .car__h1 { display: grid; gap: 8px; }
+  .car__h1-main {
+    font-family: var(--display-font);
+    font-style: var(--display-style);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    text-transform: var(--display-case);
+    letter-spacing: var(--display-track);
+    font-size: var(--fs-xl);
+    line-height: 1.02;
+    padding-bottom: 0.05em;
+  }
+  [data-univers='klassisk'] .car__h1-main {
+    background: none;
+    color: var(--fg);
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    font-size: clamp(2.6rem, 1.8rem + 3.2vw, 4.5rem);
+  }
+  .car__h1-sub {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-md);
+    color: var(--fg-soft);
+    line-height: 1.3;
+  }
+  .car__teaser { color: var(--fg-soft); max-width: 60ch; }
+  .car__price-mobile { display: grid; gap: 2px; padding-top: 8px; }
+  .car__price-mobile .price { font-size: var(--fs-lg); font-weight: 600; color: var(--fg-soft); line-height: 1.1; }
+  .car__price-mobile .muted { font-size: var(--fs-sm); }
+  @media (min-width: 1024px) { .car__price-mobile { display: none; } }
+
+  /* Instrumentbræt */
+  .gauges { margin-top: clamp(28px, 4vw, 44px); }
+  .gauges__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  @media (min-width: 640px) { .gauges__grid { grid-template-columns: repeat(3, 1fr); } }
+  .gauge {
+    padding: 18px 18px 20px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 6px;
+    min-width: 0;
+  }
+  .gauge dt {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .gauge__num { font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem); font-weight: 600; line-height: 1.1; color: var(--fg-soft); font-stretch: 112%; }
+  [data-univers='klassisk'] .gauge__num { font-family: var(--f-serif); font-weight: 500; font-stretch: 100%; }
+  .gauge__num small { font-size: 0.5em; font-weight: 500; color: var(--fg-muted); letter-spacing: 0.08em; }
+  .gauge__text { font-size: 1.0625rem; font-weight: 500; line-height: 1.3; color: var(--fg-soft); overflow-wrap: anywhere; }
+  .unknown {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-style: italic;
+    color: var(--fg-muted);
+    text-decoration: none;
+    font-size: 1rem;
+  }
+  .unknown:hover { color: var(--fg-soft); text-decoration: underline; }
+  .unknown :global(svg) { width: 14px; height: 14px; }
+
+  .car__section { margin-top: clamp(40px, 6vw, 72px); }
+  .car__h2 {
+    font-family: var(--display-font);
+    font-style: var(--display-style);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    text-transform: var(--display-case);
+    letter-spacing: var(--display-track);
+    font-size: var(--fs-lg);
+    margin-bottom: 20px;
+  }
+  .highlights { list-style: none; display: grid; gap: 10px; }
+  .highlights li { position: relative; padding-left: 26px; color: var(--fg-soft); }
+  .highlights li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.62em;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+
+  .specs { display: grid; border-top: 1px solid var(--rule); }
+  @media (min-width: 720px) { .specs { grid-template-columns: 1fr 1fr; column-gap: 32px; } }
+  .spec { display: grid; grid-template-columns: minmax(120px, 0.9fr) 1.1fr; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .spec dt { font-size: var(--fs-sm); color: var(--fg-muted); display: grid; gap: 2px; }
+  .spec__src { font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  .spec dd { font-size: 0.9375rem; color: var(--fg); overflow-wrap: anywhere; }
+  .spec dd .unknown { font-size: 0.9375rem; }
+  .car__fine { margin-top: 14px; font-size: var(--fs-sm); color: var(--fg-muted); font-style: italic; }
+
+  /* Pris-boks (sticky) */
+  .car__aside { position: relative; }
+  @media (min-width: 1024px) { .car__aside { position: sticky; top: calc(var(--header-h) + 24px); } }
+  .pricebox {
+    display: grid;
+    gap: 10px;
+    padding: clamp(22px, 3vw, 32px);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+  }
+  .pricebox__label { font-size: var(--fs-xs); font-weight: 600; letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--fg-muted); font-stretch: 112%; }
+  .pricebox__price { font-size: clamp(2rem, 1.6rem + 1.4vw, 2.75rem); font-weight: 600; line-height: 1; color: var(--fg-soft); font-stretch: 112%; }
+  [data-univers='eksklusiv'] .pricebox__price { color: var(--champagne); }
+  .pricebox__sold { font-size: var(--fs-xl); font-weight: 800; font-style: italic; font-stretch: 125%; color: var(--red); line-height: 1; text-transform: uppercase; }
+  .pricebox__note { color: var(--fg-muted); font-size: var(--fs-sm); }
+  .pricebox .rule-gold { margin: 8px 0; }
+  .pricebox__ctas { display: grid; gap: 10px; }
+  .pricebox__who { font-size: var(--fs-sm); color: var(--fg-soft); margin-top: 6px; }
+  .pricebox__share { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: var(--fs-sm); color: var(--fg-muted); }
+  .pricebox__share a, .share-btn { color: var(--fg-soft); font-size: var(--fs-sm); }
+  .share-btn { background: none; border: 0; padding: 0; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 40%, transparent); text-underline-offset: 0.2em; cursor: pointer; }
+  .share-ok { color: var(--accent); }
+  .pricebox__fine { font-size: var(--fs-xs); color: var(--fg-muted); line-height: 1.5; }
+
+  /* Beskrivelse på papir (i eksklusiv) / på mørkere creme (i klassisk) */
+  .car-desc {
+    margin-top: var(--section-y);
+    padding-block: var(--section-y);
+    background: var(--paper);
+    color: var(--paper-ink);
+    --fg: var(--paper-ink);
+    --fg-soft: #3b342c;
+    --fg-muted: var(--paper-muted);
+    --accent: var(--gold-ink);
+    --display-font: var(--f-serif);
+    --display-style: italic;
+    --display-stretch: 100%;
+    --display-weight: 420;
+    --display-case: none;
+  }
+  [data-univers='klassisk'] .car-desc { background: var(--paper-2); border-block: 1px solid var(--rule); }
+  .car-desc__inner { display: grid; gap: 24px; justify-items: center; }
+  .car-desc__prose { font-size: 1.125rem; }
+  .car-desc__prose :global(h2) { font-size: var(--fs-xl); line-height: 1.05; text-align: left; }
+  .car-desc__prose :global(h2 + p)::first-letter {
+    float: left;
+    font-family: var(--f-serif);
+    font-size: 3.6em;
+    line-height: 0.8;
+    padding: 0.08em 0.1em 0 0;
+    color: var(--gold-deep);
+  }
+
+  /* Forespørgsel */
+  .enquiry__grid { display: grid; gap: clamp(32px, 5vw, 72px); }
+  @media (min-width: 1024px) { .enquiry__grid { grid-template-columns: 4fr 8fr; } }
+  .enquiry__intro { display: grid; gap: 16px; align-content: start; }
+  .enquiry__h { margin-bottom: 0; }
+  .enquiry__phone { display: inline-flex; align-items: center; gap: 10px; font-size: var(--fs-lg); font-weight: 700; color: var(--fg-soft); text-decoration: none; font-stretch: 112%; }
+  .enquiry__phone :global(svg) { width: 26px; height: 26px; color: var(--accent); }
+
+  .related { border-top: 1px solid var(--rule); }
+  .related__title { margin-bottom: clamp(28px, 4vw, 48px); }
+  .related__grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+
+  /* Mobil bundbar */
+  .mobile-bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 8px var(--gutter) calc(8px + env(safe-area-inset-bottom));
+    background: rgba(10, 10, 11, 0.96);
+    border-top: 1px solid var(--line);
+    backdrop-filter: blur(8px);
+    --bg: var(--ink);
+    --fg-soft: var(--champagne);
+    --accent: var(--gold);
+  }
+  .mobile-bar .btn { min-height: 52px; padding: 0 14px; }
+  @media (min-width: 1024px) { .mobile-bar { display: none; } }
+  @media (max-width: 1023px) { :global(body.has-mobile-bar) { padding-bottom: calc(76px + env(safe-area-inset-bottom)); } }
+</style>

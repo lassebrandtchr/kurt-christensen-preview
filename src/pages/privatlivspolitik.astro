@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE } from '../lib/site';
+const crumbs = [{ name: 'Forside', path: '/' }, { name: 'Privatlivspolitik', path: '/privatlivspolitik/' }];
+---
+<BaseLayout title="Privatlivspolitik | Kurt Christensen" description="Sådan behandler Kurt Christensen oplysninger, du sender via hjemmesidens formularer. Ingen cookies og ingen sporing." >
+  <section class="section">
+    <div class="container--narrow">
+      <Breadcrumbs items={crumbs} />
+      <div class="prose policy">
+        <h1 class="display policy__h1">Privatlivspolitik</h1>
+        <p>Denne side forklarer, hvordan oplysninger, du sender via hjemmesiden, bliver behandlet.</p>
+        <h2>Dataansvarlig</h2>
+        <p>Kurt Christensen – klassiske og eksklusive biler, {SITE.street}, {SITE.postalCode} {SITE.city}. Telefon {SITE.phone}, e-mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+        <h2>Hvilke oplysninger og hvorfor</h2>
+        <p>Når du udfylder en formular (kontakt eller forespørgsel om en bil), modtager Kurt de oplysninger, du selv skriver: typisk navn, telefonnummer, e-mail, oplysninger om bilen, din besked og eventuelle billeder, du sender på mail. Oplysningerne bruges kun til at besvare din henvendelse. Grundlaget er dit samtykke, som du giver ved at sætte flueben i formularen.</p>
+        <h2>Formular-tjeneste</h2>
+        <p>Formularerne sendes via tjenesten Formspree, som videresender beskeden til Kurts e-mail. Formspree behandler oplysningerne på vegne af Kurt.</p>
+        <h2>Opbevaring</h2>
+        <p>Oplysningerne gemmes, så længe det er nødvendigt for at besvare din henvendelse og en eventuel handel, og slettes derefter.</p>
+        <h2>Cookies og sporing</h2>
+        <p>Hjemmesiden sætter ingen cookies og bruger ingen sporing eller annoncenetværk. Skrifttyper hentes fra sitet selv, og kortet er en illustration – ikke et indlejret Google-kort. Først hvis du selv klikker på et link til fx Google Maps eller Facebook, forlader du sitet.</p>
+        <h2>Dine rettigheder</h2>
+        <p>Du kan altid bede om indsigt i, rettelse af eller sletning af dine oplysninger og trække dit samtykke tilbage ved at kontakte Kurt. Du kan klage til Datatilsynet (datatilsynet.dk).</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .policy__h1 { font-size: var(--fs-xl); margin-top: 24px; }
+  .policy :global(h2) { font-size: var(--fs-md) !important; }
+</style>

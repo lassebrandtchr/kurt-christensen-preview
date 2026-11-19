@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Form from '../components/Form.astro';
+import Field from '../components/Field.astro';
+import RouteMap from '../components/RouteMap.astro';
+import Icon from '../components/Icon.astro';
+import { SITE, u } from '../lib/site';
+import { breadcrumbs } from '../lib/schema';
+const site = Astro.site!;
+const crumbs = [{ name: 'Forside', path: '/' }, { name: 'Kontakt', path: '/kontakt/' }];
+---
+<BaseLayout
+  title="Kontakt Kurt Christensen – Ribevej 11, 6740 Bramming"
+  description="Kontakt Kurt Christensen om klassiske og eksklusive biler. Ring 24 61 10 19, skriv til porsche993@jubii.dk eller besøg showroomet på Ribevej 11 i Bramming."
+  jsonLd={[breadcrumbs(site, crumbs), { '@context': 'https://schema.org', '@type': 'ContactPage', name: 'Kontakt Kurt', url: new URL(u('/kontakt/'), site).href }]}
+>
+  <section class="section contact">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <div class="contact__grid">
+        <div class="contact__info">
+          <h1 class="display contact__h1">Kontakt Kurt</h1>
+          <p class="lead">Har du spørgsmål til en bil, vil du aftale en fremvisning, eller har du en unik klassisk eller eksklusiv bil? Kurt svarer personligt. Det hurtigste er at ringe, men du er også velkommen til at skrive.</p>
+          <a href={SITE.phoneHref} class="contact__phone tabular magnetic"><Icon name="phone" /> {SITE.phone}</a>
+          <dl class="contact__dl">
+            <div><dt>E-mail</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
+            <div><dt>Adresse</dt><dd><address>{SITE.street}<br />{SITE.postalCode} {SITE.city}</address></dd></div>
+            <div><dt>Fremvisning</dt><dd>Ring og aftal et tidspunkt</dd></div>
+          </dl>
+          <a href={SITE.directionsUrl} target="_blank" rel="noopener" class="link-arrow">Få rutevejledning <span class="arrow">→</span></a>
+        </div>
+        <div class="contact__form paper-sheet">
+          <h2 class="contact__form-h">Skriv til Kurt</h2>
+          <p class="contact__unique">Har du en unik klassisk eller eksklusiv bil? Skriv til Kurt – han tager selv stilling til, om det er noget for ham.</p>
+          <Form
+            id="kontakt"
+            formName="Kontakt"
+            subject="Ny besked fra hjemmesiden"
+            submitLabel="Send besked"
+            successText={`Tak for din besked. Kurt vender personligt tilbage hurtigst muligt. Har du travlt, så ring på ${SITE.phone}.`}
+            consentText="Jeg accepterer, at Kurt Christensen bruger mine oplysninger til at besvare min henvendelse."
+          >
+            <div class="form-grid">
+              <Field form="kontakt" name="navn" label="Navn" required autocomplete="name" placeholder="Dit fulde navn" />
+              <Field form="kontakt" name="telefon" label="Telefon" type="tel" required autocomplete="tel" inputmode="tel" />
+              <Field form="kontakt" name="email" label="E-mail" type="email" required autocomplete="email" placeholder="navn@eksempel.dk" />
+              <Field form="kontakt" name="emne" label="Emne" type="select" required options={['Spørgsmål til en bil', 'Fremvisning', 'Jeg har en unik bil', 'Andet']} prefill="emne" msg="Vælg venligst et emne." />
+              <Field form="kontakt" name="bil" label="Hvilken bil drejer det sig om?" span2 placeholder="Fx Ferrari 308 GTS 1978" prefill="bil" />
+              <Field form="kontakt" name="besked" label="Besked" type="textarea" required span2 placeholder="Skriv din besked her" />
+            </div>
+          </Form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="map-section" aria-label="Kort">
+    <div class="container">
+      <RouteMap />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact__unique { margin: -8px 0 20px; font-size: var(--fs-sm); color: var(--fg-soft); }
+  .contact__grid { display: grid; gap: clamp(32px, 5vw, 72px); margin-top: 28px; align-items: start; }
+  @media (min-width: 1024px) { .contact__grid { grid-template-columns: 5fr 7fr; } }
+  .contact__info { display: grid; gap: 22px; justify-items: start; }
+  .contact__h1 { font-size: var(--fs-xl); }
+  .contact__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-size: clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
+    font-weight: 800;
+    font-style: italic;
+    font-stretch: 125%;
+    color: var(--champagne);
+    text-decoration: none;
+    line-height: 1;
+  }
+  .contact__phone :global(svg) { width: 0.7em; height: 0.7em; color: var(--red); }
+  .contact__phone:hover { color: #fff; }
+  .contact__dl { display: grid; gap: 14px; width: 100%; border-top: 1px solid var(--line); padding-top: 18px; }
+  .contact__dl div { display: grid; grid-template-columns: 120px 1fr; gap: 12px; }
+  .contact__dl dt { font-size: var(--fs-xs); letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-muted); font-weight: 600; padding-top: 3px; }
+  .contact__dl address { font-style: normal; }
+  .contact__form { padding: clamp(24px, 4vw, 48px); }
+  .contact__form-h { font-family: var(--f-serif); font-style: italic; font-weight: 400; font-size: var(--fs-lg); margin-bottom: 24px; }
+  .map-section { padding-bottom: var(--section-y); }
+</style>

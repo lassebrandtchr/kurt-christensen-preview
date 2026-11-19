@@ -1,0 +1,60 @@
+---
+interface Props {
+  form: string;
+  name: string;
+  label: string;
+  type?: 'text' | 'tel' | 'email' | 'number' | 'date' | 'textarea' | 'select' | 'file';
+  required?: boolean;
+  placeholder?: string;
+  hint?: string;
+  options?: string[];
+  value?: string;
+  autocomplete?: string;
+  span2?: boolean;
+  prefill?: string;
+  msg?: string;
+  multiple?: boolean;
+  accept?: string;
+  inputmode?: 'numeric' | 'tel' | 'email' | 'text';
+  min?: number;
+  max?: number;
+  rows?: number;
+}
+const p = Astro.props;
+const id = `${p.form}-${p.name}`;
+const hintId = p.hint ? `${id}-hint` : undefined;
+const type = p.type ?? 'text';
+---
+<div class:list={['field', { 'span-2': p.span2 }]} data-field>
+  <label for={id}>{p.label}{p.required && <span class="req" aria-hidden="true"> *</span>}</label>
+  {type === 'textarea' ? (
+    <textarea id={id} name={p.name} class="textarea" required={p.required} placeholder={p.placeholder} rows={p.rows ?? 5} aria-describedby={hintId} data-prefill={p.prefill} data-msg={p.msg}>{p.value}</textarea>
+  ) : type === 'select' ? (
+    <select id={id} name={p.name} class="select" required={p.required} aria-describedby={hintId} data-prefill={p.prefill} data-msg={p.msg}>
+      {!p.value && <option value="">Vælg …</option>}
+      {(p.options ?? []).map((o) => <option value={o} selected={o === p.value}>{o}</option>)}
+    </select>
+  ) : (
+    <input
+      id={id}
+      name={p.name}
+      type={type}
+      class="input"
+      required={p.required}
+      placeholder={p.placeholder}
+      value={p.value}
+      autocomplete={p.autocomplete}
+      inputmode={p.inputmode}
+      min={p.min}
+      max={p.max}
+      multiple={p.multiple}
+      accept={p.accept}
+      aria-describedby={hintId}
+      data-prefill={p.prefill}
+      data-msg={p.msg}
+      data-max-files={type === 'file' ? 10 : undefined}
+    />
+  )}
+  {p.hint && <p class="hint" id={hintId}>{p.hint}</p>}
+  <p class="field-error" data-error aria-live="polite"></p>
+</div>

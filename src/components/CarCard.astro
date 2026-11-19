@@ -1,0 +1,237 @@
+---
+import CarImage from './CarImage.astro';
+import type { Car } from '../lib/cars';
+import { statusLabel, universLabel, priceNoteText } from '../lib/cars';
+import { formatPrice, formatKm, u } from '../lib/site';
+
+interface Props {
+  car: Car;
+  index?: number;
+  headingLevel?: 'h2' | 'h3';
+  showUnivers?: boolean;
+  priority?: boolean;
+  sizes?: string;
+}
+const { car, index = 0, headingLevel = 'h3', showUnivers = true, priority = false, sizes } = Astro.props;
+const H = headingLevel;
+const sold = car.status === 'solgt';
+const meta = [String(car.year), formatKm(car.km), car.color?.split(' med ')[0]].filter(Boolean).join(' · ');
+const specLine = [car.engine, car.hp ? `${car.hp} hk` : null, car.gearbox].filter(Boolean).join(' · ');
+const href = u(`/biler/${car.slug}/`);
+---
+<article
+  class:list={['car-card', 'reveal', `car-card--${car.univers}`, { 'car-card--sold': sold }]}
+  data-univers={car.univers}
+  data-spotlight
+  data-card
+  data-make={car.make}
+  data-year={car.year}
+  data-price={car.price ?? ''}
+  data-km={car.km ?? ''}
+  data-status={car.status}
+  data-u={car.univers}
+  style={`--i:${index % 6}`}
+>
+  <a href={href} class="car-card__link">
+    <div class="car-card__media">
+      <CarImage
+        image={car.images[0]}
+        alt={car.images[0]?.alt ?? `${car.name} ${car.year}`}
+        ratio="3 / 2"
+        priority={priority}
+        sizes={sizes}
+        vt={`car-${car.slug}`}
+      />
+      <div class="car-card__badges">
+        {car.status !== 'til-salg' && (
+          <span class:list={['badge', { 'badge--sold': sold, 'badge--reserved': car.status === 'reserveret' }]}>{statusLabel[car.status]}</span>
+        )}
+      </div>
+      {showUnivers && car.univers === 'klassisk' && <span class="stamp car-card__stamp" aria-hidden="true">Klassiker</span>}
+      {specLine && (
+        <div class="car-card__specs" aria-hidden="true"><span>{specLine}</span></div>
+      )}
+      <span class="car-card__frame" aria-hidden="true"></span>
+    </div>
+    <div class="car-card__body">
+      <p class="car-card__eyebrow">
+        {showUnivers && <span class="car-card__univers">{universLabel[car.univers]}</span>}
+        <span>{car.make}</span>
+      </p>
+      <H class="car-card__title">{car.name}</H>
+      <p class="car-card__meta tabular">{meta}</p>
+      <span class="car-card__rule" aria-hidden="true"></span>
+      <div class="car-card__foot">
+        {sold ? (
+          <p class="car-card__sold">Leder du efter en lignende bil? <span>Kontakt Kurt</span></p>
+        ) : (
+          <div>
+            <p class="car-card__price tabular">{formatPrice(car.price) ?? 'Pris efter aftale'}</p>
+            <p class="car-card__note">{priceNoteText(car)}</p>
+          </div>
+        )}
+        <span class="car-card__cta">Se bilen <span class="arrow" aria-hidden="true">→</span></span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .car-card {
+    position: relative;
+    background: var(--surface);
+    color: var(--fg);
+    border: 1px solid var(--rule);
+    isolation: isolate;
+  }
+  .car-card--eksklusiv { --surface: var(--charcoal); }
+  .car-card__link { display: flex; flex-direction: column; height: 100%; color: inherit; text-decoration: none; }
+  .car-card__link:focus-visible { outline-offset: 4px; }
+
+  .car-card__media { position: relative; overflow: hidden; }
+  .car-card :global(.car-img__el) { will-change: transform; }
+  .car-card:hover :global(.car-img__el) { transform: scale(1.035); }
+  .car-card:hover :global(.car-img__vignette) { opacity: 0.6; }
+  .car-card--sold :global(.car-img__el) { filter: grayscale(0.6) brightness(0.8); }
+  .car-card--sold:hover :global(.car-img__el) { filter: none; }
+
+  .car-card__badges { position: absolute; top: 14px; left: 14px; display: flex; gap: 8px; z-index: 2; }
+  .car-card__stamp {
+    position: absolute;
+    top: 16px;
+    right: 14px;
+    z-index: 2;
+    --stamp: var(--champagne);
+    mix-blend-mode: normal;
+    background: rgba(10, 10, 11, 0.4);
+    transform: rotate(-6deg);
+  }
+
+  /* Spec-linje glider op fra bunden (egen mørk flade – aldrig tekst direkte på cremegulvet) */
+  .car-card__specs {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 2;
+    padding: 12px 16px;
+    background: rgba(10, 10, 11, 0.88);
+    color: var(--champagne);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transform: translateY(101%);
+    transition: transform 420ms var(--ease-out) 80ms;
+    border-top: 1px solid rgba(201, 164, 106, 0.5);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .car-card:hover .car-card__specs, .car-card__link:focus-visible .car-card__specs { transform: none; }
+  }
+
+  /* Guld-rammen tegner sig ind ved hover */
+  .car-card__frame {
+    position: absolute;
+    inset: 10px;
+    z-index: 3;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--gold), var(--gold)) left top / 0 1px no-repeat,
+      linear-gradient(var(--gold), var(--gold)) right top / 1px 0 no-repeat,
+      linear-gradient(var(--gold), var(--gold)) right bottom / 0 1px no-repeat,
+      linear-gradient(var(--gold), var(--gold)) left bottom / 1px 0 no-repeat;
+    transition: background-size 500ms var(--ease-out);
+  }
+  .car-card:hover .car-card__frame,
+  .car-card__link:focus-visible .car-card__frame {
+    background-size: 100% 1px, 1px 100%, 100% 1px, 1px 100%;
+  }
+
+  .car-card__body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px 20px 22px;
+    flex: 1;
+  }
+  /* Spotlight der følger musen i infofeltet */
+  .car-card__body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(240px circle at var(--x, 50%) var(--y, 50%), color-mix(in srgb, var(--gold) 12%, transparent), transparent 70%);
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .car-card:hover .car-card__body::before { opacity: 1; }
+  }
+
+  .car-card__eyebrow {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    font-stretch: 112%;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .car-card__univers { color: var(--accent); }
+  .car-card__univers::after { content: '·'; margin-left: 10px; color: var(--fg-muted); }
+
+  .car-card__title {
+    font-family: var(--title-font);
+    font-stretch: var(--title-stretch);
+    font-weight: var(--title-weight);
+    font-style: var(--title-style);
+    text-transform: var(--title-case);
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+  }
+  .car-card--klassisk .car-card__title { font-size: 1.6rem; letter-spacing: -0.01em; }
+  .car-card__meta { color: var(--fg-muted); font-size: var(--fs-sm); }
+
+  .car-card__rule {
+    display: block;
+    height: 1px;
+    margin: 10px 0 8px;
+    background: var(--rule);
+    position: relative;
+    overflow: hidden;
+  }
+  .car-card__rule::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms var(--ease-out) 80ms;
+  }
+  .car-card:hover .car-card__rule::after { transform: scaleX(1); }
+
+  .car-card__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: auto; }
+  .car-card__price { font-size: var(--fs-md); font-weight: 600; color: var(--fg-soft); line-height: 1.2; }
+  .car-card--eksklusiv .car-card__price { color: var(--champagne); }
+  .car-card__note { font-size: var(--fs-xs); color: var(--fg-muted); margin-top: 2px; }
+  .car-card__sold { font-size: var(--fs-sm); color: var(--fg-muted); }
+  .car-card__sold span { color: var(--fg-soft); font-weight: 600; }
+  .car-card__cta {
+    flex: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+    white-space: nowrap;
+  }
+  .car-card__cta .arrow { display: inline-block; transition: transform var(--t-fast) var(--ease-out) 120ms; }
+  .car-card:hover .car-card__cta .arrow { transform: translateX(4px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .car-card:hover :global(.car-img__el) { transform: none; }
+  }
+</style>

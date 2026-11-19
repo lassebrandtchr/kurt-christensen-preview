@@ -1,0 +1,157 @@
+{
+  "slug": "porsche-panamera-turbo-2011",
+  "make": "Porsche",
+  "model": "Panamera",
+  "variant": "Turbo",
+  "year": 2011,
+  "km": 139000,
+  "price": 299900,
+  "priceNote": "Prisen er uden dansk registreringsafgift",
+  "status": "til-salg",
+  "univers": "eksklusiv",
+  "featured": false,
+  "fuel": "Benzin",
+  "gearbox": null,
+  "hp": 500,
+  "engine": "V8 twin-turbo",
+  "color": "Sort",
+  "seoTitle": "Porsche Panamera Turbo 2011 til salg | Kurt Christensen",
+  "metaDescription": "Sort Porsche Panamera Turbo fra 2011 med 139.000 km. V8 twin-turbo med 500 hk. 299.900 kr. uden dansk registreringsafgift. Hos Kurt i Bramming.",
+  "h1": "Porsche Panamera Turbo 2011 – 500 hk, sort",
+  "teaser": "Sort Porsche Panamera Turbo fra 2011 med 139.000 km. V8 twin-turbo med 500 hk og plads til fire – gran turismo med Porsche-DNA.",
+  "description": "## Fire sæder, 500 hk og ægte Porsche-DNA\n\nMed Panamera beviste Porsche, at en firedørs gran turismo kan køre som en sportsvogn. Turbo-versionen var toppen af programmet ved lanceringen af første generation, og denne sorte 2011-model med 139.000 km kombinerer voldsom kraft med plads til fire voksne og bagage til en lang weekend.\n\n### Om modellen (typisk for modellen)\n\nPanamera blev præsenteret i Shanghai i april 2009 og bygges i Leipzig. Turbo-modellen har en 4,8-liters V8 med to turboladere, der yder 500 hk og 700 Nm fra 2.250 o/min. Kraften fordeles til alle fire hjul via Porsche Traction Management (PTM), og første generation af Panamera Turbo blev leveret med Porsches 7-trins PDK-dobbeltkoblingsgearkasse. Porsche opgav 0–100 km/t til 4,2 sekunder (4,0 sekunder med Sport Chrono), og tophastigheden er 303 km/t.\n\nKarrosseriet er en femdørs fastback med fire individuelle sæder og en stor bagklap. Det gør Panamera lige så velegnet til den lange tur som til hverdagen, og kombinationen af komfort og ydelse er svær at matche. Køreegenskaberne bærer tydeligt præg af, at den er udviklet af det samme firma, som bygger 911 – den føles mindre, end den er, når vejen begynder at sno sig.\n\nI dag er første generation et oplagt bud for den, der vil have V8-kraft fra Porsche i et rummeligt og komfortabelt format, og som sætter pris på, at bilen kan bruges til meget mere end søndagsture.\n\n### Kurts bil\n\n- Årgang 2011\n- 139.000 km\n- Sort\n- V8 twin-turbo med 500 hk\n- Pris 299.900 kr. – prisen er uden dansk registreringsafgift\n\nUdstyr, gearkasse og historik oplyser Kurt gerne. Ring på 24 61 10 19 og aftal en fremvisning i Bramming.\n\n*Tekniske data mærket \"typisk for modellen\" stammer fra offentlige kilder om modellen og er ikke målt på den konkrete bil. Ring til Kurt for bilspecifikke oplysninger.*\n",
+  "highlights": [
+    "Panamera Turbo fra 2011 med 139.000 km",
+    "V8 twin-turbo med 500 hk",
+    "700 Nm fra 2.250 o/min (typisk for modellen)",
+    "Firehjulstræk med Porsche Traction Management (typisk for modellen)",
+    "0–100 km/t på 4,2 sek. ifølge fabrikken (typisk for modellen)",
+    "Fire sæder og stor bagklap",
+    "Prisen er uden dansk registreringsafgift"
+  ],
+  "specs": [
+    {
+      "label": "Mærke og model",
+      "value": "Porsche Panamera Turbo",
+      "source": "kurt"
+    },
+    {
+      "label": "Årgang",
+      "value": "2011",
+      "source": "kurt"
+    },
+    {
+      "label": "Kilometer",
+      "value": "139.000 km",
+      "source": "kurt"
+    },
+    {
+      "label": "Pris",
+      "value": "299.900 kr.",
+      "source": "kurt"
+    },
+    {
+      "label": "Afgift",
+      "value": "Prisen er uden dansk registreringsafgift",
+      "source": "kurt"
+    },
+    {
+      "label": "Farve",
+      "value": "Sort",
+      "source": "kurt"
+    },
+    {
+      "label": "Motor",
+      "value": "V8 twin-turbo",
+      "source": "kurt"
+    },
+    {
+      "label": "Effekt",
+      "value": "500 hk",
+      "source": "kurt"
+    },
+    {
+      "label": "Gearkasse",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    },
+    {
+      "label": "Drivmiddel",
+      "value": "Benzin",
+      "source": "model"
+    },
+    {
+      "label": "Slagvolumen",
+      "value": "4.806 cm³",
+      "source": "model"
+    },
+    {
+      "label": "Moment",
+      "value": "700 Nm ved 2.250–4.500 o/min",
+      "source": "model"
+    },
+    {
+      "label": "Gearkasse leveret til modellen",
+      "value": "7-trins PDK (dobbeltkobling)",
+      "source": "model"
+    },
+    {
+      "label": "Træk",
+      "value": "Firehjulstræk (Porsche Traction Management)",
+      "source": "model"
+    },
+    {
+      "label": "0–100 km/t",
+      "value": "4,2 sek. (4,0 sek. med Sport Chrono)",
+      "source": "model"
+    },
+    {
+      "label": "Tophastighed",
+      "value": "303 km/t",
+      "source": "model"
+    },
+    {
+      "label": "Vægt",
+      "value": "Ca. 1.970 kg",
+      "source": "model"
+    },
+    {
+      "label": "Karrosseri",
+      "value": "5-dørs fastback, 4 sæder",
+      "source": "model"
+    },
+    {
+      "label": "Produktion",
+      "value": "Leipzig, Tyskland (første generation 2009–2013)",
+      "source": "model"
+    },
+    {
+      "label": "Udstyr / historik",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    }
+  ],
+  "images": [
+    {
+      "src": "../../assets/cars/porsche-panamera-turbo-2011/01_skraat-forfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-panamera-turbo-2011/02_skraat-bagfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-panamera-turbo-2011/03_bagfra.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-panamera-turbo-2011/04_kabine-foran.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-panamera-turbo-2011/05_midterkonsol.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-panamera-turbo-2011/06_forsaeder.webp"
+    },
+    {
+      "src": "../../assets/cars/porsche-panamera-turbo-2011/07_bagsaeder.webp"
+    }
+  ]
+}

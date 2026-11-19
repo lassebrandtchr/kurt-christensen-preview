@@ -1,0 +1,147 @@
+{
+  "slug": "ferrari-308-gts-1978",
+  "make": "Ferrari",
+  "model": "308",
+  "variant": "GTS",
+  "year": 1978,
+  "km": 83000,
+  "price": 675000,
+  "priceNote": "Inkl. dansk afgift",
+  "status": "til-salg",
+  "univers": "klassisk",
+  "featured": true,
+  "fuel": "Benzin",
+  "gearbox": null,
+  "hp": null,
+  "engine": null,
+  "color": "Rød med interiør i sort/rødt læder",
+  "seoTitle": "Ferrari 308 GTS 1978 til salg | Kurt Christensen",
+  "metaDescription": "Rød Ferrari 308 GTS fra 1978 med sort/rødt læder og 83.000 km. Targatag og V8. 675.000 kr. inkl. dansk afgift. Se den hos Kurt i Bramming.",
+  "h1": "Ferrari 308 GTS 1978 – rød med sort/rødt læder",
+  "teaser": "Rød Ferrari 308 GTS fra 1978 med interiør i sort/rødt læder og 83.000 km. Midtmotor-V8, targatag og Pininfarina-linjer – inkl. dansk afgift.",
+  "description": "## En ægte 70'er-Ferrari med åbent tag\n\nDer findes biler, man kører, og biler, man oplever. Ferrari 308 GTS hører til den sidste slags. Denne 1978-udgave står i klassisk rød med interiør i sort og rødt læder, og med 83.000 km på tælleren er den klar til at blive brugt, som den er tænkt: på en lun sommeraften med taget af og vinduerne nede.\n\n### Om modellen (typisk for modellen)\n\n308 GTS blev præsenteret på biludstillingen i Frankfurt i 1977 som targa-udgaven af 308 GTB. Linjerne er tegnet af Pininfarina, og det aftagelige tagpanel gør modellen til en af periodens mest eftertragtede Ferrari'er. Alle GTS-biler fik stålkarrosseri. Bag sæderne sidder en V8 på 2.927 cm³, som i karburatorudgaven blev fødet af fire dobbelte Weber 40 DCNF-karburatorer. I europæisk udførelse ydede motoren 255 hk, mens biler til det amerikanske marked af hensyn til emissionskrav lå omkring 240 hk. Kraften går til baghjulene via en manuel 5-trins gearkasse.\n\nFra 1977 til 1980 blev der bygget 3.219 eksemplarer af den karburatorfødte 308 GTS, før modellen gik over til benzinindsprøjtning. Mange forbinder i øvrigt 308 GTS med tv-serien Magnum, P.I., hvor en rød 308 var Tom Sellecks faste følgesvend gennem 1980'erne. Det er svært at forestille sig en bil, der i højere grad indfanger tidsånden.\n\n### Kurts bil\n\n- Årgang 1978\n- 83.000 km\n- Rød lak med interiør i sort/rødt læder\n- Pris 675.000 kr. inkl. dansk afgift\n\nOplysninger om servicehistorik, antal ejere og om bilen er i europæisk eller amerikansk udførelse får du direkte hos Kurt. En 308 GTS skal ses, høres og mærkes, før man forstår den, så ring og aftal en fremvisning i showroomet på Ribevej 11 i Bramming.\n\n*Tekniske data mærket \"typisk for modellen\" stammer fra offentlige kilder om modellen og er ikke målt på den konkrete bil. Ring til Kurt for bilspecifikke oplysninger.*\n",
+  "highlights": [
+    "Ferrari 308 GTS fra 1978 med 83.000 km",
+    "Klassisk rød lak og interiør i sort/rødt læder",
+    "Midtmonteret V8 med fire Weber-karburatorer (typisk for modellen)",
+    "Targatag – åben Ferrari-kørsel, når vejret er til det",
+    "Pininfarina-design fra Ferraris klassiske V8-æra",
+    "Kun 3.219 karburatorfødte 308 GTS bygget 1977–1980",
+    "Pris inkl. dansk afgift"
+  ],
+  "specs": [
+    {
+      "label": "Mærke og model",
+      "value": "Ferrari 308 GTS",
+      "source": "kurt"
+    },
+    {
+      "label": "Årgang",
+      "value": "1978",
+      "source": "kurt"
+    },
+    {
+      "label": "Kilometer",
+      "value": "83.000 km",
+      "source": "kurt"
+    },
+    {
+      "label": "Pris",
+      "value": "675.000 kr.",
+      "source": "kurt"
+    },
+    {
+      "label": "Afgift",
+      "value": "Inkl. dansk afgift",
+      "source": "kurt"
+    },
+    {
+      "label": "Farve",
+      "value": "Rød",
+      "source": "kurt"
+    },
+    {
+      "label": "Interiør",
+      "value": "Sort/rødt læder",
+      "source": "kurt"
+    },
+    {
+      "label": "Drivmiddel",
+      "value": "Benzin",
+      "source": "model"
+    },
+    {
+      "label": "Motor",
+      "value": "V8, midtmonteret, 4 x Weber 40 DCNF-karburatorer",
+      "source": "model"
+    },
+    {
+      "label": "Slagvolumen",
+      "value": "2.927 cm³",
+      "source": "model"
+    },
+    {
+      "label": "Effekt",
+      "value": "255 hk (europæisk udførelse) / ca. 240 hk (USA-udførelse)",
+      "source": "model"
+    },
+    {
+      "label": "Gearkasse",
+      "value": "5-trins manuel",
+      "source": "model"
+    },
+    {
+      "label": "Træk",
+      "value": "Baghjulstræk",
+      "source": "model"
+    },
+    {
+      "label": "Tophastighed",
+      "value": "Ca. 252 km/t",
+      "source": "model"
+    },
+    {
+      "label": "Karrosseri",
+      "value": "Targa (aftageligt tagpanel), stålkarrosseri",
+      "source": "model"
+    },
+    {
+      "label": "Design",
+      "value": "Pininfarina",
+      "source": "model"
+    },
+    {
+      "label": "Produktion",
+      "value": "3.219 stk. (karburator-GTS, 1977–1980)",
+      "source": "model"
+    },
+    {
+      "label": "Ejere / servicehistorik",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    }
+  ],
+  "images": [
+    {
+      "src": "../../assets/cars/ferrari-308-gts-1978/01_skraat-forfra.webp"
+    },
+    {
+      "src": "../../assets/cars/ferrari-308-gts-1978/02_skraat-bagfra.webp"
+    },
+    {
+      "src": "../../assets/cars/ferrari-308-gts-1978/03_emblem.webp"
+    },
+    {
+      "src": "../../assets/cars/ferrari-308-gts-1978/04_cockpit.webp"
+    },
+    {
+      "src": "../../assets/cars/ferrari-308-gts-1978/05_saeder.webp"
+    },
+    {
+      "src": "../../assets/cars/ferrari-308-gts-1978/06_midterkonsol.webp"
+    },
+    {
+      "src": "../../assets/cars/ferrari-308-gts-1978/07_motorrum.webp"
+    }
+  ]
+}

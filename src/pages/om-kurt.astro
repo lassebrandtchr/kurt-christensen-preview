@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CarCard from '../components/CarCard.astro';
+import Icon from '../components/Icon.astro';
+import { getCars } from '../lib/cars';
+import { SITE, u } from '../lib/site';
+import { breadcrumbs } from '../lib/schema';
+
+const site = Astro.site!;
+const cars = await getCars();
+const sold = cars.filter((c) => c.status === 'solgt');
+const crumbs = [{ name: 'Forside', path: '/' }, { name: 'Om Kurt', path: '/om-kurt/' }];
+const statement = 'Når du kontakter Kurt, er det Kurt, der tager telefonen. Det, Kurt ikke ved om en bil, lover han ikke.';
+---
+<BaseLayout
+  title="Om Kurt Christensen – klassiske biler i Bramming"
+  description="Mød Kurt Christensen, der fra sit showroom i Bramming handler med klassiske og eksklusive biler. Personlig service, ærlig snak og håndplukkede biler."
+  jsonLd={[breadcrumbs(site, crumbs), { '@context': 'https://schema.org', '@type': 'AboutPage', name: 'Om Kurt Christensen', url: new URL(u('/om-kurt/'), site).href }]}
+>
+  <section class="section about-head">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <p class="eyebrow about-head__eyebrow">Bramming · Ribevej 11</p>
+      <h1 class="about-head__h1"><span class="metal-text shine">Om Kurt</span> <span class="light">Christensen</span></h1>
+    </div>
+  </section>
+
+  <section class="statement" aria-label="Kurts løfte">
+    <div class="container">
+      <p class="statement__text" data-text-reveal>
+        {statement.split(' ').map((w) => <span class="w">{w} </span>)}
+      </p>
+    </div>
+  </section>
+
+  <section class="paper-sheet section about-body">
+    <div class="container about-body__grid">
+      <div class="about-body__aside">
+        <p class="eyebrow">Sådan arbejder Kurt</p>
+        <p class="about-body__quote">Hver bil er valgt med omhu, og hver handel bliver behandlet med den samme respekt.</p>
+      </div>
+      <div class="prose about-body__prose">
+        <p>Kurt Christensen handler med klassiske og eksklusive biler fra sit showroom på Ribevej 11 i Bramming, tæt på Esbjerg og Ribe. Udvalget spænder fra Porsche og Ferrari til store amerikanske V8'ere og moderne klassikere – biler, der har det til fælles, at de er noget særligt.</p>
+        <p>Mottoet er enkelt: Vi handler eksklusivt. Det betyder ikke, at det kun handler om dyre biler. Det betyder, at hver bil er valgt med omhu, og at hver handel bliver behandlet med den samme respekt, uanset om det er en Boxster eller en Ferrari. Kurt foretrækker et mindre og nøje udvalgt lager frem for en fyldt plads, fordi det giver tid til at kende hver enkelt bil og tid til den enkelte kunde.</p>
+        <p>Når du kontakter Kurt, er det Kurt, der tager telefonen. Du får en ærlig snak om bilen, både om det, der gør den speciel, og om det, du bør vide, før du handler. Det, Kurt ikke ved om en bil, lover han ikke.</p>
+        <p>Showroomet i Bramming er lyst og indendørs, så du kan se bilerne i ro og mag, uanset vejret. Kig forbi efter aftale, få en kop kaffe og en snak om biler.</p>
+        <p>På hjemmesiden finder du altid de biler, der er til salg lige nu, med en tydelig skelnen mellem det, Kurt ved om den konkrete bil, og de tekniske data, der er typiske for modellen. Det er den samme ærlighed, du møder i showroomet. Har du selv en unik klassisk eller eksklusiv bil, er du velkommen til at skrive til Kurt – han tager selv stilling til, om det er noget for ham.</p>
+        <div class="about-body__ctas">
+          <a href={SITE.phoneHref} class="btn btn--primary magnetic"><Icon name="phone" /> Ring til Kurt på {SITE.phone}</a>
+          <a href={u("/kontakt/")} class="link-arrow">Skriv til Kurt <span class="arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sold-section" id="solgte-biler" aria-labelledby="sold-h">
+    <div class="container">
+      <div class="sold-section__head">
+        <h2 id="sold-h" class="section-title sold-section__h"><Icon name="flag" class="sold-section__flag" /> Solgte biler</h2>
+        <div class="sold-section__intro">
+          <p>Her kan du se et udvalg af de biler, der har fundet nye ejere gennem Kurt. Listen giver et godt billede af, hvilken slags biler Kurt handler med – og af, hvor hurtigt de særlige biler bliver solgt.</p>
+          <p>Har du set en bil her, som du gerne ville have haft? Så fortæl Kurt, hvad du leder efter. Han holder øje med markedet og kontakter dig, når der dukker noget lignende op. Ring på <a href={SITE.phoneHref}>{SITE.phone}</a>, eller brug <a href={u("/kontakt/")}>kontaktformularen</a>.</p>
+        </div>
+      </div>
+      {sold.length > 0 ? (
+        <div class="sold-grid">
+          {sold.map((c, i) => <CarCard car={c} index={i} />)}
+        </div>
+      ) : (
+        <p class="muted">Solgte biler vises her, når de har fundet nye ejere.</p>
+      )}
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <div class="container cta-strip__inner">
+      <p class="cta-strip__t">Leder du efter noget bestemt? Kurt finder det.</p>
+      <a href={SITE.phoneHref} class="btn btn--primary magnetic"><Icon name="phone" /> Ring {SITE.phone}</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import '../scripts/about.ts';
+</script>
+
+<style>
+  .about-head { padding-bottom: clamp(24px, 3vw, 40px); }
+  .about-head__eyebrow { margin-top: clamp(28px, 4vw, 48px); }
+  .about-head__h1 {
+    margin-top: 16px;
+    font-style: italic;
+    font-stretch: 125%;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: var(--fs-2xl);
+    line-height: 0.95;
+  }
+  .about-head__h1 .light { font-weight: 300; color: var(--silver); display: block; }
+
+  .statement { padding: clamp(40px, 7vw, 120px) 0 clamp(64px, 9vw, 144px); }
+  .statement__text {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 380;
+    font-size: clamp(1.75rem, 1.1rem + 3vw, 3.75rem);
+    line-height: 1.18;
+    max-width: 24ch;
+    color: var(--champagne);
+  }
+  .statement__text .w { transition: opacity 200ms linear; }
+
+  .about-body__grid { display: grid; gap: clamp(32px, 5vw, 80px); }
+  .about-body__grid > * { min-width: 0; overflow-wrap: break-word; }
+  @media (min-width: 1024px) { .about-body__grid { grid-template-columns: 4fr 8fr; } }
+  .about-body__aside { display: grid; gap: 14px; align-content: start; }
+  .about-body__quote { font-family: var(--f-serif); font-style: italic; font-size: var(--fs-lg); line-height: 1.25; color: var(--paper-ink); }
+  .about-body__prose { font-size: 1.125rem; color: #3b342c; }
+  .about-body__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin-top: 2em !important; }
+
+  .sold-section__head { display: grid; gap: 24px; margin-bottom: clamp(28px, 4vw, 48px); }
+  @media (min-width: 1024px) { .sold-section__head { grid-template-columns: 4fr 8fr; gap: 80px; } }
+  .sold-section__h { display: inline-flex; align-items: center; gap: 14px; }
+  .sold-section__h :global(.sold-section__flag) { width: 30px; height: 30px; color: var(--gold); }
+  .sold-section__intro { display: grid; gap: 14px; color: var(--fg-soft); max-width: 70ch; }
+  .sold-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+
+  .cta-strip { border-top: 1px solid var(--line); }
+  .cta-strip__inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; padding-block: clamp(40px, 6vw, 72px); }
+  .cta-strip__t { font-style: italic; font-stretch: 125%; font-weight: 700; text-transform: uppercase; font-size: var(--fs-md); }
+</style>

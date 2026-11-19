@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StockGrid from './StockGrid.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import Icon from './Icon.astro';
+import type { Univers } from '../lib/cars';
+import { getCarsByUnivers } from '../lib/cars';
+import { SITE, u } from '../lib/site';
+import { breadcrumbs } from '../lib/schema';
+
+interface Props {
+  univers: Univers;
+  title: string;
+  description: string;
+  h1: string;
+  intro: string[];
+  path: string;
+}
+const { univers, title, description, h1, intro, path } = Astro.props;
+const cars = await getCarsByUnivers(univers);
+const forSale = cars.filter((c) => c.status !== 'solgt').length;
+const site = Astro.site!;
+const name = univers === 'klassisk' ? 'Klassiske biler' : 'Eksklusive biler';
+const crumbs = [{ name: 'Forside', path: '/' }, { name, path }];
+const [h1Main, ...h1Rest] = h1.split(' – ');
+const other = univers === 'klassisk'
+  ? { href: u('/eksklusive-biler/'), label: 'Eksklusive biler', teaser: 'Moderne præcision, turbokraft og firehjulstræk.' }
+  : { href: u('/klassiske-biler/'), label: 'Klassiske biler', teaser: 'Biler med patina, mekanik og en historie at fortælle.' };
+const collection = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: h1,
+  url: new URL(u(path), site).href,
+  hasPart: cars.map((c) => ({ '@type': 'Car', name: `${c.name} ${c.year}`, url: new URL(u(`/biler/${c.slug}/`), site).href })),
+};
+---
+<BaseLayout title={title} description={description} univers={univers} jsonLd={[breadcrumbs(site, crumbs), collection]}>
+  <section class:list={['u-hero', `u-hero--${univers}`]}>
+    {univers === 'eksklusiv' && <span class="u-hero__lines" aria-hidden="true"></span>}
+    <div class="container u-hero__inner">
+      <Breadcrumbs items={crumbs} />
+      {univers === 'klassisk' && (
+        <span class="stamp stamp--round u-hero__stamp reveal" aria-hidden="true">Klassisk<br />· {forSale} til salg ·<br />Bramming</span>
+      )}
+      <p class="eyebrow u-hero__eyebrow reveal">{univers === 'klassisk' ? 'Det klassiske univers' : 'Det eksklusive univers'}</p>
+      <h1 class="u-hero__h1">
+        <span class:list={['u-hero__main', { 'metal-text shine': univers === 'eksklusiv' }]}>{h1Main}</span>
+        {h1Rest.length > 0 && <span class="u-hero__sub">{h1Rest.join(' – ')}</span>}
+      </h1>
+      <div class="u-hero__intro">
+        {intro.map((p, i) => <p class={univers === 'eksklusiv' ? 'reveal-wipe' : 'reveal'} style={`--i:${i}`}>{p}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="u-stock" aria-label={`${name} på lager`}>
+    <div class="container">
+      {cars.length > 0 ? (
+        <StockGrid cars={cars} showUniversFilter={false} showUnivers={false} id={`lager-${univers}`} />
+      ) : (
+        <p class="u-empty">Lige nu er alle biler i dette univers solgt, men nye er på vej. Ring til Kurt på <a href={SITE.phoneHref}>{SITE.phone}</a>, eller fortæl os, hvad du leder efter.</p>
+      )}
+      <p class="u-note">Vi tager forbehold for, at bilen kan være solgt. Ring derfor, inden du kører hjemmefra.</p>
+    </div>
+  </section>
+
+  <section class="u-other" data-univers={univers === 'klassisk' ? 'eksklusiv' : 'klassisk'}>
+    <a href={other.href} class="container u-other__link">
+      <span class="eyebrow">Det andet univers</span>
+      <span class="u-other__title">{other.label}</span>
+      <span class="u-other__teaser">{other.teaser}</span>
+      <span class="u-other__cta">Gå til {other.label.toLowerCase()} <Icon name="arrow" /></span>
+    </a>
+  </section>
+</BaseLayout>
+
+<style>
+  .u-hero { position: relative; overflow: hidden; padding: clamp(36px, 5vw, 64px) 0 clamp(48px, 7vw, 96px); }
+  .u-hero__inner { position: relative; display: grid; gap: 22px; }
+  .u-hero__inner > * { min-width: 0; }
+  .u-hero__eyebrow { margin-top: clamp(24px, 4vw, 48px); }
+  .u-hero__h1 { display: grid; gap: 14px; max-width: 18ch; }
+  .u-hero__main {
+    font-family: var(--display-font);
+    font-style: var(--display-style);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    text-transform: var(--display-case);
+    letter-spacing: var(--display-track);
+    line-height: 0.98;
+    font-size: min(var(--fs-2xl), 10.5vw);
+  }
+  .u-hero__sub { font-size: var(--fs-md); font-weight: 400; line-height: 1.3; color: var(--fg-soft); }
+  .u-hero__intro { display: grid; gap: 18px; max-width: 64ch; color: var(--fg-soft); font-size: 1.125rem; margin-top: 8px; }
+
+  /* Klassisk: serif, papir, stempel, store luftige linjer */
+  .u-hero--klassisk .u-hero__main { font-size: clamp(3.2rem, 2rem + 6vw, 7.5rem); font-weight: 380; }
+  .u-hero--klassisk .u-hero__sub { font-family: var(--f-serif); font-style: italic; font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
+  .u-hero--klassisk .u-hero__intro { font-family: var(--f-serif); font-size: 1.25rem; line-height: 1.65; }
+  @media (min-width: 1024px) {
+    .u-hero--klassisk .u-hero__intro { grid-template-columns: 1fr 1fr; max-width: none; column-gap: 56px; }
+    .u-hero--klassisk .u-hero__intro p:first-child { grid-column: 1 / -1; font-size: 1.5rem; max-width: 46ch; }
+  }
+  .u-hero--klassisk .u-hero__intro p:first-child::first-letter {
+    float: left;
+    font-size: 3.4em;
+    line-height: 0.82;
+    padding: 0.06em 0.1em 0 0;
+    color: var(--gold-deep);
+    font-style: italic;
+  }
+  .u-hero__stamp { position: absolute; right: var(--gutter); top: clamp(40px, 7vw, 96px); transform: rotate(-10deg); }
+  @media (max-width: 720px) { .u-hero__stamp { width: 104px; height: 104px; font-size: 0.5625rem; top: 64px; } }
+
+  /* Eksklusiv: præcision – rasterlinjer, metal, stram typografi */
+  .u-hero--eksklusiv {
+    background: radial-gradient(ellipse 70% 80% at 85% 0%, rgba(215, 217, 220, 0.07), transparent 70%), var(--ink);
+    border-bottom: 1px solid var(--line);
+  }
+  .u-hero__lines {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(90deg, rgba(201, 164, 106, 0.08) 1px, transparent 1px);
+    background-size: calc(100% / 12) 100%;
+    -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+    mask-image: linear-gradient(180deg, #000, transparent);
+  }
+  .u-hero--eksklusiv .u-hero__sub { font-stretch: 112%; text-transform: uppercase; letter-spacing: 0.18em; font-size: var(--fs-sm); font-weight: 600; color: var(--gold); }
+  .u-hero--eksklusiv .u-hero__intro { font-size: 1.0625rem; }
+  @media (min-width: 1024px) {
+    .u-hero--eksklusiv .u-hero__intro { grid-template-columns: repeat(3, 1fr); max-width: none; column-gap: 40px; }
+    .u-hero--eksklusiv .u-hero__intro p { padding-top: 18px; border-top: 1px solid var(--line); }
+  }
+
+  .u-stock { padding: clamp(32px, 4vw, 56px) 0 var(--section-y); }
+  .u-note { margin-top: 32px; text-align: center; font-size: var(--fs-sm); color: var(--fg-muted); }
+  .u-empty { padding: 40px 0; text-align: center; color: var(--fg-soft); }
+
+  .u-other { background: var(--bg); color: var(--fg); border-top: 1px solid var(--rule); }
+  .u-other__link { display: grid; gap: 12px; padding-block: clamp(56px, 8vw, 112px); text-decoration: none; color: inherit; }
+  .u-other__title {
+    font-family: var(--display-font);
+    font-style: var(--display-style);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    text-transform: var(--display-case);
+    font-size: var(--fs-xl);
+    line-height: 1;
+  }
+  .u-other__teaser { color: var(--fg-soft); }
+  .u-other__cta { display: inline-flex; gap: 10px; align-items: center; font-size: var(--fs-sm); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; font-stretch: 112%; }
+  .u-other__cta :global(svg) { width: 20px; height: 20px; transition: transform 300ms var(--ease-out); }
+  .u-other__link:hover .u-other__cta :global(svg) { transform: translateX(6px); }
+</style>

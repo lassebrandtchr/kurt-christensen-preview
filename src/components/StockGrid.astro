@@ -1,0 +1,139 @@
+---
+/**
+ * Lagergrid med filtre (univers, mærke, vis) + sortering. Server-renderet, filtreres i klienten.
+ * Årgang/pris-filtre vises først når lageret (til salg) er > 8 biler (jf. designbrief).
+ */
+import CarCard from './CarCard.astro';
+import type { Car } from '../lib/cars';
+import { SITE } from '../lib/site';
+interface Props { cars: Car[]; showUniversFilter?: boolean; showUnivers?: boolean; id?: string; }
+const { cars, showUniversFilter = true, showUnivers = true, id = 'lager' } = Astro.props;
+
+const forSale = cars.filter((c) => c.status !== 'solgt');
+const soldCount = cars.length - forSale.length;
+const count = (pred: (c: Car) => boolean) => cars.filter(pred).length;
+const makes = [...new Set(cars.map((c) => c.make))].sort((a, b) => a.localeCompare(b, 'da'));
+const slug = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-');
+const showRangeFilters = forSale.length > 8;
+const decades = [...new Set(cars.map((c) => Math.floor(c.year / 10) * 10))].sort();
+const decadeLabel = (d: number) => `${String(d).slice(2)}'erne`;
+---
+<div class="stock" data-stock id={id}>
+  <div class="stock__controls" data-stock-controls hidden>
+    <div class="stock__filters">
+      {showUniversFilter && (
+        <div class="stock__group" role="group" aria-label="Univers">
+          <span class="stock__label">Univers</span>
+          <div class="chips">
+            <button type="button" class="chip" data-filter="univers" data-value="" aria-pressed="true">Alle</button>
+            <button type="button" class="chip" data-filter="univers" data-value="klassisk" aria-pressed="false">Klassisk <span class="count">{count((c) => c.univers === 'klassisk')}</span></button>
+            <button type="button" class="chip" data-filter="univers" data-value="eksklusiv" aria-pressed="false">Eksklusiv <span class="count">{count((c) => c.univers === 'eksklusiv')}</span></button>
+          </div>
+        </div>
+      )}
+      <div class="stock__group" role="group" aria-label="Mærke">
+        <span class="stock__label">Mærke</span>
+        <div class="chips">
+          <button type="button" class="chip" data-filter="maerke" data-value="" aria-pressed="true">Alle</button>
+          {makes.map((m) => (
+            <button type="button" class="chip" data-filter="maerke" data-value={slug(m)} aria-pressed="false">{m} <span class="count">{count((c) => c.make === m)}</span></button>
+          ))}
+        </div>
+      </div>
+      {soldCount > 0 && (
+        <div class="stock__group" role="group" aria-label="Vis">
+          <span class="stock__label">Vis</span>
+          <div class="chips">
+            <button type="button" class="chip" data-filter="vis" data-value="" aria-pressed="true">Alle</button>
+            <button type="button" class="chip" data-filter="vis" data-value="til-salg" aria-pressed="false">Til salg <span class="count">{forSale.length}</span></button>
+            <button type="button" class="chip" data-filter="vis" data-value="solgt" aria-pressed="false">Solgte <span class="count">{soldCount}</span></button>
+          </div>
+        </div>
+      )}
+      {showRangeFilters && (
+        <>
+          <div class="stock__group" role="group" aria-label="Årgang">
+            <span class="stock__label">Årgang</span>
+            <div class="chips">
+              <button type="button" class="chip" data-filter="aarti" data-value="" aria-pressed="true">Alle</button>
+              {decades.map((d) => <button type="button" class="chip" data-filter="aarti" data-value={String(d)} aria-pressed="false">{decadeLabel(d)}</button>)}
+            </div>
+          </div>
+          <div class="stock__group" role="group" aria-label="Pris">
+            <span class="stock__label">Pris</span>
+            <div class="chips">
+              <button type="button" class="chip" data-filter="pris" data-value="" aria-pressed="true">Alle</button>
+              <button type="button" class="chip" data-filter="pris" data-value="0-200000" aria-pressed="false">Under 200.000</button>
+              <button type="button" class="chip" data-filter="pris" data-value="200000-500000" aria-pressed="false">200–500.000</button>
+              <button type="button" class="chip" data-filter="pris" data-value="500000-" aria-pressed="false">Over 500.000</button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+    <div class="stock__sort">
+      <label for={`${id}-sort`} class="stock__label">Sortér</label>
+      <select id={`${id}-sort`} class="select" data-sort>
+        <option value="">Anbefalet</option>
+        <option value="aargang-ny">Årgang: nyeste først</option>
+        <option value="aargang-gl">Årgang: ældste først</option>
+        <option value="pris-op">Pris: laveste først</option>
+        <option value="pris-ned">Pris: højeste først</option>
+        <option value="km-op">Kilometer: lav til høj</option>
+        <option value="km-ned">Kilometer: høj til lav</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="stock__result" aria-live="polite" data-stock-result></p>
+
+  <div class="stock__grid" data-stock-grid>
+    {cars.map((car, i) => (
+      <div class="stock__item" data-item data-u={car.univers} data-maerke={slug(car.make)} data-status={car.status} data-year={car.year} data-price={car.price ?? ''} data-km={car.km ?? ''} data-order={i}>
+        <CarCard car={car} index={i} showUnivers={showUnivers} headingLevel="h2" priority={i < 2} />
+      </div>
+    ))}
+  </div>
+
+  <p class="stock__empty" data-stock-empty hidden>
+    Ingen biler matcher. Kurt har ofte biler på vej – ring <a href={SITE.phoneHref}>{SITE.phone}</a>.
+    <button type="button" class="link-arrow" data-reset>Nulstil filtre</button>
+  </p>
+</div>
+
+<style>
+  .stock__controls {
+    display: grid;
+    gap: 20px;
+    padding-bottom: 24px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .stock__controls[hidden] { display: none; }
+  @media (min-width: 1024px) { .stock__controls { grid-template-columns: 1fr auto; align-items: end; } }
+  .stock__filters { display: grid; gap: 14px; }
+  .stock__group { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .stock__label {
+    min-width: 72px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .stock__sort { display: grid; gap: 8px; min-width: 240px; }
+  .stock__result { font-size: var(--fs-sm); color: var(--fg-muted); margin: 14px 0 22px; min-height: 1.5em; }
+  .stock__grid { display: grid; gap: clamp(16px, 2vw, 24px); grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .stock__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .stock__grid { grid-template-columns: repeat(3, 1fr); } }
+  .stock__item { display: grid; }
+  .stock__item[hidden] { display: none; }
+  .stock__empty { padding: 48px 0; text-align: center; color: var(--fg-soft); display: grid; gap: 16px; justify-items: center; }
+  .stock__empty[hidden] { display: none; }
+  .stock__empty button { background: none; border: 0; cursor: pointer; }
+</style>
+
+<script>
+  import '../scripts/filters.ts';
+</script>

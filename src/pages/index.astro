@@ -1,0 +1,272 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroShield from '../components/HeroShield.astro';
+import CarCard from '../components/CarCard.astro';
+import CarImage from '../components/CarImage.astro';
+import Marquee from '../components/Marquee.astro';
+import Portals from '../components/Portals.astro';
+import Icon from '../components/Icon.astro';
+import { getCars, featuredCar, priceNoteText } from '../lib/cars';
+import { SITE, formatPrice, formatKm, u } from '../lib/site';
+
+const cars = await getCars();
+const forSale = cars.filter((c) => c.status !== 'solgt');
+const sold = cars.filter((c) => c.status === 'solgt');
+const featured = featuredCar(cars);
+const makes = [...new Set(cars.map((c) => c.make.toUpperCase()))];
+const marqueeItems = [...makes, 'KLASSISKE BILER', 'EKSKLUSIVE BILER', 'RIBEVEJ 11', 'BRAMMING'];
+const featuredMeta = featured
+  ? [String(featured.year), formatKm(featured.km), featured.hp ? `${featured.hp} hk` : null, featured.color?.split(' med ')[0]].filter(Boolean).join(' · ')
+  : '';
+
+const values = [
+  { t: 'Håndplukkede biler', d: 'Hver bil er udvalgt, fordi den er værd at eje. Kvalitet og karakter frem for mængde.' },
+  { t: 'Personlig service', d: 'Du taler direkte med Kurt, fra det første opkald til nøglerne skifter hænder. Ingen mellemled og ingen salgsscripts.' },
+  { t: 'Ærlige beskrivelser', d: 'Det, vi ved om bilen, skriver vi. Det, vi ikke ved, siger vi. Så ved du præcis, hvad du kigger på.' },
+  { t: 'Lyst indendørs showroom', d: 'Se bilerne i ro og mag på Ribevej 11 i Bramming, uanset vejret.' },
+];
+---
+<BaseLayout
+  title="Klassiske og eksklusive biler i Bramming | Kurt Christensen"
+  description="Porsche, Ferrari og amerikanske klassikere til salg hos Kurt Christensen i Bramming. Håndplukkede biler, ærlige beskrivelser og personlig service."
+  overlayHeader
+>
+  <script is:inline slot="head">
+    try {
+      if (!sessionStorage.getItem('kc-hero') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('hero-intro');
+        setTimeout(function () { document.documentElement.classList.remove('hero-intro'); }, 3500);
+      }
+    } catch (e) {}
+  </script>
+
+  <HeroShield />
+
+  <Marquee items={marqueeItems} />
+
+  <!-- To universer -->
+  <Portals cars={cars} />
+
+  <!-- Udvalgt bil -->
+  {featured && (
+    <section class="section featured" aria-labelledby="featured-title">
+      <div class="container featured__grid">
+        <a href={u(`/biler/${featured.slug}/`)} class="featured__media beam reveal" aria-hidden="true" tabindex="-1">
+          <CarImage image={featured.images[0]} alt="" ratio="3 / 2" sizes="(min-width: 1024px) 58vw, 100vw" />
+        </a>
+        <div class="featured__info reveal" style="--i:1">
+          <p class="eyebrow">Udvalgt bil</p>
+          <h2 id="featured-title" class="featured__title display">{featured.name}<span class="featured__year"> · {featured.year}</span></h2>
+          <p class="featured__meta tabular">{featuredMeta}</p>
+          <p class="featured__teaser">{featured.teaser}</p>
+          <hr class="rule-gold" />
+          <p class="featured__price tabular">{formatPrice(featured.price) ?? 'Pris efter aftale'}</p>
+          <p class="muted featured__note">{priceNoteText(featured)}</p>
+          <div class="featured__ctas">
+            <a href={u(`/biler/${featured.slug}/`)} class="btn btn--secondary">Se bilen <Icon name="arrow" /></a>
+            <a href={SITE.phoneHref} class="link-arrow">Ring {SITE.phone} <span class="arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- På lager nu: alle biler samlet, med univers-mærke -->
+  <section class="section stock" aria-labelledby="stock-title">
+    <div class="container">
+      <div class="section-head reveal">
+        <h2 id="stock-title" class="hairline-title section-title">På lager nu</h2>
+      </div>
+      <p class="stock__sub muted reveal">{forSale.length} {forSale.length === 1 ? 'bil' : 'biler'} til salg · klassiske og eksklusive side om side</p>
+      {forSale.length > 0 ? (
+        <div class="card-grid">
+          {forSale.map((car, i) => <CarCard car={car} index={i} />)}
+        </div>
+      ) : (
+        <p class="empty">Lige nu er alle biler solgt, men nye er på vej. Ring til Kurt på <a href={SITE.phoneHref}>{SITE.phone}</a>, eller fortæl os, hvad du leder efter.</p>
+      )}
+      <div class="stock__more">
+        <a href={u("/biler-til-salg/")} class="link-arrow">Alle biler til salg <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Papir-ark: intro + hvorfor Kurt -->
+  <section class="paper-sheet section intro" aria-labelledby="intro-title">
+    <div class="container intro__grid">
+      <div class="intro__quote reveal">
+        <p class="eyebrow">Velkommen</p>
+        <h2 id="intro-title" class="intro__h">Når du handler hos Kurt, handler du med Kurt.</h2>
+      </div>
+      <div class="intro__text stack reveal" style="--i:1">
+        <p>Velkommen til Kurt Christensen – klassiske og eksklusive biler. Fra showroomet på Ribevej 11 i Bramming handler Kurt med biler, der er noget særligt: sportsvogne fra Porsche og Ferrari, store amerikanske V8'ere og moderne klassikere, som er værd at eje og værd at køre i.</p>
+        <p>Her finder du ikke hundredvis af biler på en plads. Du finder et nøje udvalgt lager, hvor hver bil er valgt, fordi den har karakter, historie og kvalitet. Det betyder også, at udvalget skifter, og at de bedste biler ofte bliver solgt hurtigt.</p>
+        <p>Du får en direkte og ærlig snak om bilen, mulighed for at se den i ro og mag i et lyst indendørs showroom og en handel, der foregår i et tempo, der passer dig. Kig udvalget igennem, og ring, når en bil fanger dit øje.</p>
+        <a href={u("/om-kurt/")} class="link-arrow">Mød Kurt <span class="arrow">→</span></a>
+      </div>
+    </div>
+    <div class="container">
+      <h2 class="sr-only">Hvorfor handle hos Kurt</h2>
+      <ul class="values" role="list">
+        {values.map((v, i) => (
+          <li class="value reveal" style={`--i:${i}`}>
+            <span class="value__mark" aria-hidden="true"></span>
+            <h3 class="value__t">{v.t}</h3>
+            <p>{v.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Girardo-rytme: overskrift · afsnit · ét link -->
+  <section class="section trio" aria-label="Unik bil, søg og besøg">
+    <div class="container trio__grid">
+      <article class="trio__item reveal">
+        <p class="eyebrow">Har du en unik bil?</p>
+        <h2 class="trio__h">En klassiker eller noget helt særligt?</h2>
+        <p>Har du en unik klassisk eller eksklusiv bil, så skriv til Kurt. Han tager selv stilling til, om det er noget for ham.</p>
+        <a href={u("/kontakt/?emne=Jeg%20har%20en%20unik%20bil")} class="link-arrow">Skriv til Kurt <span class="arrow">→</span></a>
+      </article>
+      <article class="trio__item reveal" style="--i:1">
+        <p class="eyebrow">Ikke alt er online</p>
+        <h2 class="trio__h">Leder du efter noget bestemt?</h2>
+        <p>Udvalget skifter løbende, og de særlige biler bliver sjældent længe. Fortæl Kurt, hvad du drømmer om.</p>
+        <a href={SITE.phoneHref} class="link-arrow">Ring til Kurt – {SITE.phone} <span class="arrow">→</span></a>
+      </article>
+      <article class="trio__item reveal" style="--i:2">
+        <p class="eyebrow">Besøg showroomet</p>
+        <h2 class="trio__h">{SITE.street}, {SITE.city}</h2>
+        <p>Se bilerne i ro og mag i et lyst indendørs showroom, uanset vejret. Ring og aftal et tidspunkt.</p>
+        <a href={u("/kontakt/")} class="link-arrow">Kontakt og rutevejledning <span class="arrow">→</span></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- Solgte biler -->
+  {sold.length > 0 && (
+    <section class="section sold" aria-labelledby="sold-title">
+      <div class="container">
+        <div class="sold__head reveal">
+          <h2 id="sold-title" class="section-title sold__title"><Icon name="flag" class="sold__flag" /> Solgte biler</h2>
+          <a href={u("/om-kurt/#solgte-biler")} class="link-arrow">Se tidligere solgte biler <span class="arrow">→</span></a>
+        </div>
+        <div class="sold__row">
+          {sold.map((car, i) => <CarCard car={car} index={i} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- CTA-bånd -->
+  <section class="cta-band" aria-labelledby="cta-title">
+    <div class="container cta-band__inner reveal">
+      <h2 id="cta-title" class="cta-band__h">Har du fundet drømmebilen?</h2>
+      <p>Ring til Kurt på {SITE.phone} – så finder I et tidspunkt, hvor du kan se den.</p>
+      <div class="cta-band__ctas">
+        <a href={SITE.phoneHref} class="btn btn--primary magnetic"><Icon name="phone" /> Ring til Kurt</a>
+        <a href={u("/kontakt/")} class="btn btn--secondary">Skriv til Kurt</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section-head { margin-bottom: 10px; }
+  .stock__sub { text-align: center; margin-bottom: clamp(32px, 5vw, 56px); font-size: var(--fs-sm); letter-spacing: 0.04em; }
+  .card-grid {
+    display: grid;
+    gap: clamp(16px, 2vw, 24px);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  }
+  .stock__more { margin-top: 40px; display: flex; justify-content: center; }
+  .empty { text-align: center; max-width: 56ch; margin-inline: auto; color: var(--fg-soft); }
+
+  /* Udvalgt bil */
+  .featured { padding-top: clamp(48px, 7vw, 96px); }
+  .featured__grid { display: grid; gap: clamp(28px, 4vw, 56px); align-items: center; }
+  @media (min-width: 1024px) { .featured__grid { grid-template-columns: 7fr 5fr; } }
+  .featured__media { display: block; }
+  .featured__info { display: grid; gap: 14px; justify-items: start; }
+  .featured__title { font-size: var(--fs-xl); }
+  .featured__year { font-weight: 300; }
+  .featured__meta { color: var(--fg-muted); font-size: var(--fs-sm); letter-spacing: 0.06em; text-transform: uppercase; }
+  .featured__teaser { color: var(--fg-soft); max-width: 48ch; }
+  .featured .rule-gold { width: 100%; margin: 6px 0; }
+  .featured__price { font-size: var(--fs-lg); font-weight: 600; color: var(--champagne); line-height: 1; }
+  .featured__note { font-size: var(--fs-sm); }
+  .featured__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin-top: 8px; }
+
+  /* Border beam – kun her */
+  .beam { position: relative; padding: 1px; isolation: isolate; }
+  .beam::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: conic-gradient(from var(--beam-angle), rgba(201, 164, 106, 0.18) 0 78%, var(--gold) 88%, rgba(201, 164, 106, 0.18) 98%);
+    animation: beam-spin 8s linear infinite;
+  }
+  @keyframes beam-spin { to { --beam-angle: 360deg; } }
+  @media (prefers-reduced-motion: reduce) {
+    .beam::before { animation: none; background: rgba(201, 164, 106, 0.6); }
+  }
+
+  /* Intro / værdier på papir */
+  .intro__grid { display: grid; gap: clamp(28px, 5vw, 80px); }
+  @media (min-width: 960px) { .intro__grid { grid-template-columns: 5fr 7fr; } }
+  .intro__h {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-xl);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin-top: 16px;
+  }
+  .intro__text { --stack: 1.1em; color: var(--fg-soft); max-width: 62ch; }
+  .values {
+    list-style: none;
+    display: grid;
+    gap: 0;
+    margin-top: clamp(56px, 8vw, 104px);
+    border-top: 1px solid var(--rule);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  }
+  .value { padding: 28px 24px 8px 0; display: grid; gap: 10px; align-content: start; }
+  .value__mark { width: 9px; height: 9px; background: var(--gold-deep); transform: rotate(45deg); }
+  .value__t { font-family: var(--f-sans); font-stretch: 112%; font-size: var(--fs-sm); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; }
+  .value p { color: var(--fg-muted); font-size: 1rem; }
+
+  /* Trio */
+  .trio__grid { display: grid; gap: clamp(36px, 5vw, 64px); }
+  @media (min-width: 900px) { .trio__grid { grid-template-columns: repeat(3, 1fr); } }
+  .trio__item { display: grid; gap: 14px; align-content: start; justify-items: start; padding-top: 24px; border-top: 1px solid var(--line); }
+  .trio__h { font-family: var(--f-sans); font-style: italic; font-stretch: 125%; font-weight: 700; font-size: var(--fs-md); text-transform: uppercase; letter-spacing: 0; }
+  .trio__item p:not(.eyebrow) { color: var(--fg-muted); }
+
+  /* Solgte */
+  .sold { padding-top: 0; }
+  .sold__head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px 24px; margin-bottom: 28px; }
+  .sold__title { display: inline-flex; align-items: center; gap: 14px; }
+  .sold__title :global(.sold__flag) { width: 28px; height: 28px; color: var(--gold); }
+  .sold__row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(82vw, 360px);
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 12px;
+    scrollbar-color: var(--line) transparent;
+  }
+  .sold__row > :global(*) { scroll-snap-align: start; }
+
+  /* CTA-bånd */
+  .cta-band { border-top: 1px solid var(--line); background: radial-gradient(ellipse 60% 100% at 50% 100%, rgba(179, 34, 30, 0.12), transparent 70%), var(--ink); }
+  .cta-band__inner { display: grid; justify-items: center; text-align: center; gap: 16px; padding-block: clamp(64px, 9vw, 120px); }
+  .cta-band__h { font-family: var(--f-sans); font-style: italic; font-stretch: 125%; font-weight: 800; font-size: min(var(--fs-xl), 7.6vw); text-transform: uppercase; line-height: 1; }
+  .cta-band__inner > * { max-width: 100%; min-width: 0; }
+  .cta-band p { color: var(--fg-soft); font-size: var(--fs-md); max-width: 40ch; }
+  .cta-band__ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 16px; margin-top: 8px; }
+</style>

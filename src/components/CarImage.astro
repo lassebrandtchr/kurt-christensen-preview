@@ -1,0 +1,140 @@
+---
+/**
+ * Viser ét bilbillede uanset kilde (lokal astro:assets / Sanity-URL) – eller en
+ * elegant placeholder med logoet, når bilen endnu ikke har billeder.
+ * Aldrig et brudt <img>.
+ */
+import { Picture } from 'astro:assets';
+import type { CarImage as CarImageT } from '../lib/cars';
+import Logo from './Logo.astro';
+
+interface Props {
+  image?: CarImageT | null;
+  alt?: string;
+  sizes?: string;
+  widths?: number[];
+  loading?: 'eager' | 'lazy';
+  priority?: boolean;
+  class?: string;
+  ratio?: string; // CSS aspect-ratio, fx "3 / 2"
+  vt?: string; // view-transition-name
+  placeholderLabel?: string;
+}
+const {
+  image,
+  alt,
+  sizes = '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw',
+  widths = [480, 768, 960, 1440, 2048],
+  loading = 'lazy',
+  priority = false,
+  class: cls,
+  ratio = '3 / 2',
+  vt,
+  placeholderLabel = 'Studiebilleder på vej',
+} = Astro.props;
+
+const altText = alt ?? image?.alt ?? '';
+let localWidths: number[] = [];
+if (image?.kind === 'local') {
+  localWidths = widths.filter((w) => w <= image.src.width);
+  if (!localWidths.includes(image.src.width) && image.src.width < Math.max(...widths)) localWidths.push(image.src.width);
+}
+const remoteSrc = (url: string, w: number) => `${url}?w=${w}&auto=format&q=80&fit=max`;
+const style = [`aspect-ratio: ${ratio}`, vt ? `view-transition-name: ${vt}` : ''].filter(Boolean).join(';');
+---
+<div class:list={['car-img', cls, { 'car-img--ph': !image }]} style={style}>
+  {image?.kind === 'local' && (
+    <Picture
+      src={image.src}
+      alt={altText}
+      formats={['avif']}
+      fallbackFormat="webp"
+      widths={localWidths}
+      sizes={sizes}
+      loading={priority ? 'eager' : loading}
+      decoding={priority ? 'sync' : 'async'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      quality={78}
+      class="car-img__el"
+    />
+  )}
+  {image?.kind === 'remote' && (
+    <img
+      src={remoteSrc(image.url, 1440)}
+      srcset={widths.map((w) => `${remoteSrc(image.url, w)} ${w}w`).join(', ')}
+      sizes={sizes}
+      width={image.width}
+      height={image.height}
+      alt={altText}
+      loading={priority ? 'eager' : loading}
+      decoding="async"
+      fetchpriority={priority ? 'high' : 'auto'}
+      class="car-img__el"
+    />
+  )}
+  {!image && (
+    <div class="car-img__ph" role="img" aria-label={alt ? `${alt} – billeder på vej` : placeholderLabel}>
+      <Logo width={360} loading="lazy" alt="" class="car-img__logo" />
+      <span class="car-img__ph-label">{placeholderLabel}</span>
+    </div>
+  )}
+  <span class="car-img__vignette" aria-hidden="true"></span>
+</div>
+
+<style>
+  .car-img {
+    position: relative;
+    overflow: hidden;
+    background: var(--ink);
+    width: 100%;
+  }
+  .car-img :global(picture) { display: contents; }
+  .car-img :global(.car-img__el) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 60%;
+    transition: transform 600ms var(--ease-out), filter 600ms var(--ease-out);
+  }
+  .car-img__vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(10, 10, 11, 0.35) 100%);
+    transition: opacity 600ms var(--ease-out);
+  }
+  .car-img__ph {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 14px;
+    padding: 8%;
+    background:
+      radial-gradient(ellipse at 50% 35%, rgba(201, 164, 106, 0.09), transparent 65%),
+      var(--ink);
+  }
+  .car-img__ph::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(201, 164, 106, 0.22);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  }
+  .car-img__ph :global(.car-img__logo) {
+    width: min(78%, 360px);
+    height: auto;
+    opacity: 0.92;
+  }
+  .car-img__ph-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    font-stretch: 112%;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+  }
+</style>

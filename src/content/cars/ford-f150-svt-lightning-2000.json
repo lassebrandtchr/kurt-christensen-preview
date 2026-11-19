@@ -1,0 +1,135 @@
+{
+  "slug": "ford-f150-svt-lightning-2000",
+  "make": "Ford",
+  "model": "F-150",
+  "variant": "SVT Lightning",
+  "year": 2000,
+  "km": 125000,
+  "price": 350000,
+  "priceNote": null,
+  "status": "til-salg",
+  "univers": "klassisk",
+  "featured": false,
+  "fuel": "Benzin",
+  "gearbox": null,
+  "hp": null,
+  "engine": "Kompressor-V8",
+  "color": "Sort med orange striber",
+  "seoTitle": "Ford F-150 SVT Lightning 2000 til salg | Kurt Christensen",
+  "metaDescription": "Sort Ford F-150 SVT Lightning fra 2000 med orange striber og 125.000 km. Kompressor-V8 i en pickup. 350.000 kr. Se den hos Kurt i Bramming.",
+  "h1": "Ford F-150 SVT Lightning 2000 – kompressor-V8",
+  "teaser": "Sort Ford F-150 SVT Lightning fra 2000 med orange striber og 125.000 km. Kompressor-V8 i en pickup – Fords egen muskeltruck.",
+  "description": "## Muskelbil med lad\n\nFord F-150 SVT Lightning er en af de mest ikoniske performance-pickupper, der nogensinde er bygget. Idéen var enkel og en smule vanvittig: Tag Fords populære F-150 og giv den en kompressormotor. Denne sorte Lightning fra 2000 med orange striber har kørt 125.000 km og har personlighed nok til at vende hoveder overalt, hvor den kommer frem.\n\n### Om modellen (typisk for modellen)\n\nAnden generation af Lightning kom til modelåret 1999 og blev udviklet af Fords Special Vehicle Team (SVT). Motoren er en 5,4-liters V8 med en Eaton M112-kompressor, som i 1999 og 2000 ydede 360 hp (SAE) og 440 lb-ft – omkring 597 Nm. Fra 2001 blev effekten hævet til 380 hp. Kraften går til baghjulene gennem en 4-trins automatgearkasse af typen 4R100, og Hagerty angiver 0–60 mph til omkring 6,2 sekunder for de tidlige årgange. Den slags tal var dengang forbeholdt sportsvogne.\n\nFord planlagde omkring 4.000 biler om året, og i de fleste produktionsår blev det tal overgået. Modellen blev for alvor kendt af et bredt publikum, da en rød Lightning optrådte som Brian O'Conners bil i filmen The Fast and the Furious fra 2001. I dag er anden generation en efterspurgt samlerbil, og det er ikke svært at forstå hvorfor: Lyden fra kompressoren, trækket fra den store V8 og den rå attitude er svære at finde andre steder.\n\n### Kurts bil\n\n- Årgang 2000\n- 125.000 km\n- Sort med orange striber\n- Kompressor-V8\n- Pris 350.000 kr.\n\nAfgiftsforhold, historik og øvrige detaljer får du direkte hos Kurt. Ring på 24 61 10 19 og kom forbi showroomet på Ribevej 11 i Bramming – den her skal høres.\n\n*Tekniske data mærket \"typisk for modellen\" stammer fra offentlige kilder om modellen og er ikke målt på den konkrete bil. Ring til Kurt for bilspecifikke oplysninger.*\n",
+  "highlights": [
+    "SVT Lightning fra 2000 med 125.000 km",
+    "Sort med orange striber",
+    "5,4-liters V8 med Eaton-kompressor (typisk for modellen)",
+    "360 hp (SAE) og ca. 597 Nm (typisk for 1999–2000-modellen)",
+    "Udviklet af Fords Special Vehicle Team (SVT)",
+    "Modellen kendt fra filmen The Fast and the Furious (2001)"
+  ],
+  "specs": [
+    {
+      "label": "Mærke og model",
+      "value": "Ford F-150 SVT Lightning",
+      "source": "kurt"
+    },
+    {
+      "label": "Årgang",
+      "value": "2000",
+      "source": "kurt"
+    },
+    {
+      "label": "Kilometer",
+      "value": "125.000 km",
+      "source": "kurt"
+    },
+    {
+      "label": "Pris",
+      "value": "350.000 kr.",
+      "source": "kurt"
+    },
+    {
+      "label": "Afgift",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    },
+    {
+      "label": "Farve",
+      "value": "Sort med orange striber",
+      "source": "kurt"
+    },
+    {
+      "label": "Motor",
+      "value": "Kompressor-V8",
+      "source": "kurt"
+    },
+    {
+      "label": "Drivmiddel",
+      "value": "Benzin",
+      "source": "model"
+    },
+    {
+      "label": "Motor (modellen)",
+      "value": "5,4-liters V8 med Eaton M112-kompressor",
+      "source": "model"
+    },
+    {
+      "label": "Effekt",
+      "value": "360 hp (SAE) for 1999–2000",
+      "source": "model"
+    },
+    {
+      "label": "Moment",
+      "value": "440 lb-ft (ca. 597 Nm) for 1999–2000",
+      "source": "model"
+    },
+    {
+      "label": "Gearkasse",
+      "value": "4-trins automatisk (4R100)",
+      "source": "model"
+    },
+    {
+      "label": "Træk",
+      "value": "Baghjulstræk",
+      "source": "model"
+    },
+    {
+      "label": "0–97 km/t (0–60 mph)",
+      "value": "Ca. 6,2 sek. (1999–2000, ifølge Hagerty)",
+      "source": "model"
+    },
+    {
+      "label": "Karrosseri",
+      "value": "Pickup",
+      "source": "model"
+    },
+    {
+      "label": "Udviklet af",
+      "value": "Ford Special Vehicle Team (SVT)",
+      "source": "model"
+    },
+    {
+      "label": "Historik",
+      "value": "Kontakt Kurt",
+      "source": "kurt"
+    }
+  ],
+  "images": [
+    {
+      "src": "../../assets/cars/ford-f150-svt-lightning-2000/01_skraat-forfra.webp"
+    },
+    {
+      "src": "../../assets/cars/ford-f150-svt-lightning-2000/02_skraat-forfra-hoejre.webp"
+    },
+    {
+      "src": "../../assets/cars/ford-f150-svt-lightning-2000/03_side.webp"
+    },
+    {
+      "src": "../../assets/cars/ford-f150-svt-lightning-2000/04_skraat-bagfra.webp"
+    },
+    {
+      "src": "../../assets/cars/ford-f150-svt-lightning-2000/05_lad-oppefra.webp"
+    }
+  ]
+}

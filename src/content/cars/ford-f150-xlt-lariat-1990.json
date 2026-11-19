@@ -1,0 +1,103 @@
+{
+  "slug": "ford-f150-xlt-lariat-1990",
+  "make": "Ford",
+  "model": "F-150",
+  "variant": "XLT Lariat",
+  "year": 1990,
+  "km": null,
+  "price": 189000,
+  "priceNote": null,
+  "status": "solgt",
+  "univers": "klassisk",
+  "featured": false,
+  "fuel": "Benzin",
+  "gearbox": null,
+  "hp": null,
+  "engine": "5,8 V8",
+  "color": "To-tone beige/brun",
+  "seoTitle": "Ford F-150 XLT Lariat 1990 – solgt | Kurt Christensen",
+  "metaDescription": "Solgt: Ford F-150 XLT Lariat fra 1990 med 5,8-liters V8 og to-tonet lak i beige/brun. Leder du efter en amerikansk pickup? Kontakt Kurt i Bramming.",
+  "h1": "Ford F-150 XLT Lariat 1990 – solgt",
+  "teaser": "Ford F-150 XLT Lariat fra 1990 med 5,8-liters V8 og to-tonet lak i beige og brun. Solgt – kontakt Kurt, hvis du leder efter noget lignende.",
+  "description": "## Klassisk amerikansk pickup med stor V8\n\nDenne Ford F-150 XLT Lariat fra 1990 har fundet en ny ejer. Den er et godt eksempel på den type bil, Kurt holder af: ærlige amerikanske klassikere med en stor V8 under hjelmen og masser af karakter. To-tonet lak i beige og brun og det kantede design fra slutningen af 80'erne – sådan så en pickup ud, når den var bygget til at holde.\n\n### Om modellen (typisk for modellen)\n\nF-150 fra 1990 tilhører ottende generation af Fords F-serie, som blev produceret fra 1986 til 1991. Det var i denne generation, at Ford blev den første pickup-producent, der kun tilbød motorer uden karburator. Den 5,8-liters V8 er den velkendte 351 Windsor på 5.766 cm³. Fra 1988 fik den elektronisk benzinindsprøjtning og ydede 210 hp (SAE) og 315 lb-ft – omkring 427 Nm – i årgangene 1988–1991.\n\nTil F-serien kunne man vælge mellem flere gearkasser, både manuelle og automatiske, ligesom der fandtes udgaver med baghjulstræk og firehjulstræk. XLT Lariat var et af de bedre udstyrsniveauer, og kombinationen af komfort og en stor V8 gør netop disse biler populære blandt entusiaster af amerikanske biler i dag.\n\n### Bilen\n\n- Årgang 1990\n- 5,8 V8\n- To-tonet lak i beige/brun\n- Status: Solgt\n\n### Leder du efter noget lignende?\n\nAmerikanske pickupper og klassikere er en fast del af Kurts sortiment. Hvis du drømmer om en bestemt model, så ring på 24 61 10 19 eller skriv via kontaktformularen. Fortæl, hvad du leder efter, så holder Kurt øje på dine vegne.\n\n*Tekniske data mærket \"typisk for modellen\" stammer fra offentlige kilder om modellen og er ikke målt på den konkrete bil. Ring til Kurt for bilspecifikke oplysninger.*\n",
+  "highlights": [
+    "Ford F-150 XLT Lariat fra 1990",
+    "5,8-liters V8 (351 Windsor, typisk for modellen)",
+    "210 hp (SAE) og ca. 427 Nm (typisk for 1988–1991)",
+    "To-tonet lak i beige og brun",
+    "Ottende generation af Fords F-serie",
+    "Solgt – kontakt Kurt for lignende biler"
+  ],
+  "specs": [
+    {
+      "label": "Mærke og model",
+      "value": "Ford F-150 XLT Lariat",
+      "source": "kurt"
+    },
+    {
+      "label": "Årgang",
+      "value": "1990",
+      "source": "kurt"
+    },
+    {
+      "label": "Kilometer",
+      "value": "Ikke oplyst",
+      "source": "kurt"
+    },
+    {
+      "label": "Status",
+      "value": "Solgt",
+      "source": "kurt"
+    },
+    {
+      "label": "Farve",
+      "value": "To-tone beige/brun",
+      "source": "kurt"
+    },
+    {
+      "label": "Motor",
+      "value": "5,8 V8",
+      "source": "kurt"
+    },
+    {
+      "label": "Drivmiddel",
+      "value": "Benzin",
+      "source": "model"
+    },
+    {
+      "label": "Motor (modellen)",
+      "value": "5,8-liters V8 (351 Windsor) med elektronisk benzinindsprøjtning",
+      "source": "model"
+    },
+    {
+      "label": "Slagvolumen",
+      "value": "5.766 cm³",
+      "source": "model"
+    },
+    {
+      "label": "Effekt",
+      "value": "210 hp (SAE)",
+      "source": "model"
+    },
+    {
+      "label": "Moment",
+      "value": "315 lb-ft (ca. 427 Nm)",
+      "source": "model"
+    },
+    {
+      "label": "Gearkasse",
+      "value": "Flere manuelle og automatiske varianter leveret – ikke oplyst for denne bil",
+      "source": "model"
+    },
+    {
+      "label": "Generation",
+      "value": "8. generation F-serie (produceret 1986–1991)",
+      "source": "model"
+    }
+  ],
+  "images": [
+    {
+      "src": "../../assets/cars/ford-f150-xlt-lariat-1990/01_skraat-forfra.webp"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StockGrid from './StockGrid.astro';
 import Breadcrumbs from './Breadcrumbs.astro';
 import Icon from './Icon.astro';
+import CarAlert from './CarAlert.astro';
 import type { Univers } from '../lib/cars';
 import { getCarsByUnivers } from '../lib/cars';
 import { SITE, u } from '../lib/site';
@@ -61,6 +62,9 @@ const collection = {
         <p class="u-empty">Lige nu er alle biler i dette univers solgt, men nye er på vej. Ring til Kurt på <a href={SITE.phoneHref}>{SITE.phone}</a>, eller fortæl os, hvad du leder efter.</p>
       )}
       <p class="u-note">Vi tager forbehold for, at bilen kan være solgt. Ring derfor, inden du kører hjemmefra.</p>
+      <div class="u-alert" id="bilalarm">
+        <CarAlert id={`bilalarm-${univers}`} univers={univers} lead={univers === 'klassisk' ? 'Få besked, når Kurt får den rigtige klassiker ind.' : 'Få besked, når Kurt får den rigtige sportsvogn ind.'} />
+      </div>
     </div>
   </section>
 
@@ -75,11 +79,13 @@ const collection = {
 </BaseLayout>
 
 <style>
+  .u-alert { margin-top: clamp(40px, 6vw, 72px); scroll-margin-top: calc(var(--header-h) + 24px); }
   .u-hero { position: relative; overflow: hidden; padding: clamp(36px, 5vw, 64px) 0 clamp(48px, 7vw, 96px); }
   .u-hero__inner { position: relative; display: grid; gap: 22px; }
   .u-hero__inner > * { min-width: 0; }
   .u-hero__eyebrow { margin-top: clamp(24px, 4vw, 48px); }
-  .u-hero__h1 { display: grid; gap: 14px; max-width: 18ch; }
+  .u-hero__h1 { display: grid; gap: 14px; }
+  .u-hero__sub { max-width: 34ch; }
   .u-hero__main {
     font-family: var(--display-font);
     font-style: var(--display-style);

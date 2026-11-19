@@ -15,6 +15,8 @@ const crumbs = [{ name: 'Forside', path: '/' }, { name: 'Privatlivspolitik', pat
         <p>Kurt Christensen – klassiske og eksklusive biler, {SITE.street}, {SITE.postalCode} {SITE.city}. Telefon {SITE.phone}, e-mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
         <h2>Hvilke oplysninger og hvorfor</h2>
         <p>Når du udfylder en formular (kontakt eller forespørgsel om en bil), modtager Kurt de oplysninger, du selv skriver: typisk navn, telefonnummer, e-mail, oplysninger om bilen, din besked og eventuelle billeder, du sender på mail. Oplysningerne bruges kun til at besvare din henvendelse. Grundlaget er dit samtykke, som du giver ved at sætte flueben i formularen.</p>
+        <h2>Bilalarm</h2>
+        <p>Skriver du dig op til en bilalarm, gemmer Kurt din e-mail, dit eventuelle navn og hvilket univers og mærke/model du leder efter. Oplysningerne bruges kun til at skrive til dig, når der kommer en bil ind, der passer. Grundlaget er dit samtykke. Du kan framelde dig når som helst ved at svare på en mail fra Kurt eller ringe på {SITE.phone}. Oplysningerne gemmes, indtil du framelder dig, og slettes derefter.</p>
         <h2>Formular-tjeneste</h2>
         <p>Formularerne sendes via tjenesten Formspree, som videresender beskeden til Kurts e-mail. Formspree behandler oplysningerne på vegne af Kurt.</p>
         <h2>Opbevaring</h2>
@@ -30,6 +32,7 @@ const crumbs = [{ name: 'Forside', path: '/' }, { name: 'Privatlivspolitik', pat
   </section>
 </BaseLayout>
 <style>
-  .policy__h1 { font-size: var(--fs-xl); margin-top: 24px; }
+  /* "PRIVATLIVSPOLITIK" er ca. 12,6 em bred */
+  .policy__h1 { font-size: min(var(--fs-xl), calc((100vw - 2 * var(--gutter)) / 13.2), 3rem); margin-top: 24px; }
   .policy :global(h2) { font-size: var(--fs-md) !important; }
 </style>

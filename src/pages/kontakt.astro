@@ -65,6 +65,7 @@ const crumbs = [{ name: 'Forside', path: '/' }, { name: 'Kontakt', path: '/konta
 <style>
   .contact__unique { margin: -8px 0 20px; font-size: var(--fs-sm); color: var(--fg-soft); }
   .contact__grid { display: grid; gap: clamp(32px, 5vw, 72px); margin-top: 28px; align-items: start; }
+  .contact__grid > * { min-width: 0; }
   @media (min-width: 1024px) { .contact__grid { grid-template-columns: 5fr 7fr; } }
   .contact__info { display: grid; gap: 22px; justify-items: start; }
   .contact__h1 { font-size: var(--fs-xl); }

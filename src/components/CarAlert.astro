@@ -1,0 +1,100 @@
+---
+/**
+ * Bilalarm: køberen skriver sig op til at få besked, når Kurt får en bil ind, der passer.
+ * Sendes til samme Formspree-formular som resten af sitet med emnet "Bilalarm" – Kurt giver selv besked.
+ */
+import Form from './Form.astro';
+import Field from './Field.astro';
+import Icon from './Icon.astro';
+import type { Univers } from '../lib/cars';
+
+interface Props {
+  id: string;
+  univers?: Univers;
+  /** Forudfyld mærke/model, fx fra en solgt bil */
+  model?: string;
+  heading?: string;
+  lead?: string;
+}
+const {
+  id,
+  univers,
+  model,
+  heading = 'Bilalarm',
+  lead = 'Få besked, når Kurt får den rigtige bil ind.',
+} = Astro.props;
+const universValue = univers === 'klassisk' ? 'Klassisk' : univers === 'eksklusiv' ? 'Eksklusiv' : 'Begge';
+---
+<section class="alert-band" aria-labelledby={`${id}-title`}>
+  <div class="alert-band__intro">
+    <span class="alert-band__icon" aria-hidden="true"><Icon name="bell" /></span>
+    <h2 id={`${id}-title`} class="alert-band__h">{heading}</h2>
+    <p class="alert-band__lead">{lead}</p>
+    <p class="alert-band__how">Kurt ser på mange biler, før de kommer på siden. Skriv dig op, så får du en mail, når der kommer noget ind, der passer. Det er gratis, og du kan til enhver tid framelde dig.</p>
+  </div>
+  <Form
+    id={id}
+    formName="Bilalarm"
+    subject="Bilalarm"
+    submitLabel="Sæt alarm"
+    successText="Tak! Du får besked, når Kurt får en bil ind, der passer."
+    consentText="Jeg accepterer, at Kurt Christensen gemmer min e-mail og mit ønske og skriver til mig, når der kommer en bil ind, der passer. Jeg kan framelde mig når som helst ved at svare på mailen."
+    class="alert-band__form"
+  >
+    <div class="form-grid">
+      <Field form={id} name="univers" label="Univers" type="select" required value={universValue} options={['Begge', 'Klassisk', 'Eksklusiv']} msg="Vælg et univers." />
+      <Field form={id} name="maerke_model" label="Mærke / model" required value={model} placeholder="Fx Porsche 911" msg="Skriv hvilket mærke eller hvilken model du leder efter." />
+      <Field form={id} name="navn" label="Navn (valgfrit)" autocomplete="name" />
+      <Field form={id} name="email" label="E-mail" type="email" required autocomplete="email" placeholder="navn@eksempel.dk" />
+    </div>
+  </Form>
+</section>
+
+<style>
+  .alert-band {
+    display: grid;
+    gap: clamp(28px, 4vw, 56px);
+    padding: clamp(20px, 4vw, 52px);
+    background: var(--surface, #141416);
+    border: 1px solid var(--rule);
+    position: relative;
+  }
+  .alert-band::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    pointer-events: none;
+  }
+  @media (min-width: 1024px) { .alert-band { grid-template-columns: 5fr 7fr; align-items: start; } }
+  .alert-band__intro { display: grid; gap: 12px; align-content: start; position: relative; }
+  .alert-band__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    color: var(--accent);
+  }
+  .alert-band__icon :global(svg) { width: 24px; height: 24px; transform-origin: 50% 10%; }
+  .alert-band:hover .alert-band__icon :global(svg) { animation: bell 900ms ease-in-out; }
+  @keyframes bell { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(14deg); } 40% { transform: rotate(-11deg); } 60% { transform: rotate(7deg); } 80% { transform: rotate(-4deg); } }
+  .alert-band__h {
+    font-family: var(--display-font);
+    font-style: var(--display-style);
+    font-stretch: var(--display-stretch);
+    font-weight: var(--display-weight);
+    text-transform: var(--display-case);
+    letter-spacing: var(--display-track);
+    font-size: var(--fs-lg);
+    line-height: 1.05;
+    color: var(--fg);
+  }
+  .alert-band__lead { font-family: var(--f-serif); font-style: italic; font-size: var(--fs-md); color: var(--fg-soft); line-height: 1.35; }
+  .alert-band__how { color: var(--fg-muted); font-size: var(--fs-sm); max-width: 46ch; }
+  .alert-band :global(.alert-band__form) { position: relative; }
+  @media (prefers-reduced-motion: reduce) {
+    .alert-band:hover .alert-band__icon :global(svg) { animation: none; }
+  }
+</style>

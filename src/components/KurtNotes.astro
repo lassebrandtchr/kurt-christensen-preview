@@ -1,0 +1,125 @@
+---
+/**
+ * Kurts mekaniker-noter: et håndskrevet notekort.
+ * Vises KUN, når Kurt selv har udfyldt felterne i Studio (car.notes !== null). Intet opdigtes.
+ *  - variant "full": på bilsiden (alle tre linjer + signatur)
+ *  - variant "teaser": på forsiden i "Fra Kurts notesbog" (kort uddrag + link til bilen)
+ */
+import '@fontsource/kalam/latin-400.css';
+import '@fontsource/kalam/latin-700.css';
+import type { KurtNotes } from '../lib/cars';
+import Icon from './Icon.astro';
+
+interface Props {
+  notes: KurtNotes;
+  variant?: 'full' | 'teaser';
+  href?: string;
+  carName?: string;
+  tilt?: number;
+}
+const { notes, variant = 'full', href, carName, tilt = -1.2 } = Astro.props;
+const rows = [
+  { label: 'Det kiggede jeg efter', text: notes.lookedFor },
+  { label: 'Det fandt jeg', text: notes.found },
+].filter((r) => r.text);
+const Tag = href ? 'a' : 'div';
+---
+<Tag
+  class:list={['knote', `knote--${variant}`, 'reveal']}
+  href={href}
+  style={`--tilt:${tilt}deg`}
+  aria-label={variant === 'teaser' && carName ? `Kurts note om ${carName}` : undefined}
+>
+  <span class="knote__tape" aria-hidden="true"></span>
+  <p class="knote__kicker"><Icon name="pen" /> {variant === 'teaser' && carName ? carName : 'Kurts noter'}</p>
+  {variant === 'full' && <p class="knote__sub">30 år som mekaniker. Det her kiggede han efter på netop denne bil.</p>}
+  <dl class="knote__rows">
+    {rows.map((r) => (
+      <div class="knote__row">
+        <dt>{r.label}</dt>
+        <dd>{r.text}</dd>
+      </div>
+    ))}
+  </dl>
+  {notes.verdict && <p class="knote__verdict">“{notes.verdict}”</p>}
+  <p class="knote__sign">– Kurt</p>
+  {variant === 'teaser' && <span class="knote__more">Se bilen <span aria-hidden="true">→</span></span>}
+</Tag>
+
+<style>
+  .knote {
+    --ink-pen: #1d2a4a;
+    position: relative;
+    display: grid;
+    gap: 12px;
+    padding: clamp(22px, 3vw, 32px) clamp(20px, 3vw, 30px) clamp(20px, 3vw, 26px);
+    color: var(--ink-pen);
+    text-decoration: none;
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 31px, rgba(29, 42, 74, 0.13) 31px 32px) 0 58px / 100% calc(100% - 58px) no-repeat,
+      linear-gradient(90deg, transparent 38px, rgba(160, 40, 40, 0.28) 38px 39px, transparent 39px),
+      #f6f0e2;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 18px 40px -18px rgba(0, 0, 0, 0.55);
+    transform: rotate(var(--tilt));
+    transition: transform 500ms var(--ease-out), box-shadow 500ms var(--ease-out);
+    max-width: 100%;
+  }
+  a.knote:hover, a.knote:focus-visible { transform: rotate(0deg) translateY(-4px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 26px 50px -20px rgba(0, 0, 0, 0.6); }
+  .knote__tape {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    width: 110px;
+    height: 26px;
+    transform: translateX(-50%) rotate(2deg);
+    background: rgba(214, 196, 150, 0.72);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  }
+  .knote__kicker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 30px;
+    font-family: var(--f-sans);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    font-stretch: 112%;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #7a5a22;
+  }
+  .knote__kicker :global(svg) { width: 15px; height: 15px; flex: none; }
+  .knote__sub { padding-left: 30px; font-family: var(--f-serif); font-style: italic; font-size: 0.95rem; color: #5b5142; line-height: 1.4; }
+  .knote__rows { display: grid; gap: 14px; padding-left: 30px; }
+  .knote__row dt {
+    font-family: var(--f-sans);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a7b62;
+    margin-bottom: 2px;
+  }
+  .knote__row dd, .knote__verdict, .knote__sign {
+    font-family: 'Kalam', 'Comic Sans MS', cursive;
+    font-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.35rem);
+    line-height: 32px;
+    overflow-wrap: anywhere;
+  }
+  .knote__verdict { padding-left: 30px; font-weight: 700; color: #8b1e1e; }
+  .knote__sign { justify-self: end; font-weight: 700; font-size: 1.5rem; transform: rotate(-4deg); }
+  .knote--teaser .knote__row dd { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .knote__more {
+    padding-left: 30px;
+    font-family: var(--f-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7a5a22;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .knote, a.knote:hover { transition: none; transform: none; }
+  }
+</style>

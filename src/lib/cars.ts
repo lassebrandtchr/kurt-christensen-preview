@@ -20,6 +20,12 @@ export interface Spec {
   source: 'kurt' | 'model';
 }
 
+export interface KurtNotes {
+  lookedFor: string | null;
+  found: string | null;
+  verdict: string | null;
+}
+
 export interface Car {
   slug: string;
   make: string;
@@ -47,6 +53,17 @@ export interface Car {
   highlights: string[];
   specs: Spec[];
   images: CarImage[];
+  /** Kurts egne mekaniker-noter. null = Kurt har ikke skrevet noget (vises ikke). */
+  notes: KurtNotes | null;
+  /** Koldstart-optagelse. null = ingen lyd (afspilleren vises ikke). */
+  audio: { url: string; mime: string | null } | null;
+}
+
+const clean = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null);
+/** Noter vises kun, når mindst "kiggede efter" eller "fandt" er udfyldt – aldrig opdigtet. */
+export function toNotes(lookedFor: unknown, found: unknown, verdict: unknown): KurtNotes | null {
+  const n = { lookedFor: clean(lookedFor), found: clean(found), verdict: clean(verdict) };
+  return n.lookedFor || n.found ? n : null;
 }
 
 const env = import.meta.env as Record<string, string | undefined>;
@@ -114,6 +131,8 @@ async function fromCollection(): Promise<Car[]> {
         src: img.src,
         alt: img.alt || altFor(d, i, arr.length),
       })),
+      notes: toNotes(d.notes?.lookedFor, d.notes?.found, d.notes?.verdict),
+      audio: d.audio ? { url: d.audio, mime: null } : null,
     }),
   );
 }
@@ -134,7 +153,8 @@ export const slugify = (input: string) =>
 const GROQ = `*[_type == "car" && defined(make) && defined(year) && !(_id in path("drafts.**"))] | order(_createdAt desc){
   "slug": slug.current, make, model, variant, year, km, price, priceNote, status, univers, featured,
   fuel, gearbox, hp, engine, color, seoTitle, metaDescription, h1, teaser, description, highlights,
-  specs[]{label, value, source},
+  specs[]{label, value, source}, noteLookedFor, noteFound, noteVerdict,
+  "audio": coldStart.asset->{url, mimeType},
   "cover": coverImage{alt, "url": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height},
   images[]{alt, "url": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height}
 }`;
@@ -185,6 +205,8 @@ async function fromSanity(): Promise<Car[]> {
           height: img.height ?? 1067,
           alt: img.alt || altFor(d, i, arr.length),
         })),
+      notes: toNotes(d.noteLookedFor, d.noteFound, d.noteVerdict),
+      audio: d.audio?.url ? { url: d.audio.url, mime: d.audio.mimeType ?? null } : null,
     }),
   );
 }

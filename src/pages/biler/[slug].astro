@@ -7,6 +7,9 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Form from '../../components/Form.astro';
 import Field from '../../components/Field.astro';
 import Icon from '../../components/Icon.astro';
+import KurtNotes from '../../components/KurtNotes.astro';
+import ColdStart from '../../components/ColdStart.astro';
+import CarAlert from '../../components/CarAlert.astro';
 import type { Car } from '../../lib/cars';
 import { getCars, relatedCars, priceNoteText, universLabel, universPath, statusLabel } from '../../lib/cars';
 import { SITE, formatPrice, formatKm, nf, u } from '../../lib/site';
@@ -52,7 +55,7 @@ type Gauge = { label: string; value: number | string | null; ticker?: 'year' | '
 const gauges: Gauge[] = [
   { label: 'Årgang', value: car.year, ticker: 'year' },
   { label: 'Kilometer', value: car.km, ticker: 'num', unit: 'km' },
-  { label: 'Hestekræfter', value: car.hp, ticker: 'num', unit: 'hk' },
+  { label: 'Heste\u00ADkræfter', value: car.hp, ticker: 'num', unit: 'hk' },
   { label: 'Drivmiddel', value: car.fuel },
   { label: 'Gearkasse', value: car.gearbox },
   { label: 'Farve', value: car.color },
@@ -81,8 +84,9 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
       <a href={u(universPath[car.univers])} class="car__univers-link">{universLabel[car.univers]} univers</a>
     </div>
 
-    <div class="container car__gallery">
+    <div class:list={['container', 'car__gallery', { 'reveal car__gallery--sold': sold }]}>
       <CarGallery car={car} />
+      {sold && <span class="sold-stamp car__sold-stamp" aria-hidden="true">Solgt</span>}
     </div>
 
     <div class="container car__layout">
@@ -94,6 +98,7 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
             {h1Sub && <span class="car__h1-sub">– {h1Sub}</span>}
           </h1>
           {car.teaser && <p class="car__teaser">{car.teaser}</p>}
+          {car.audio && <ColdStart url={car.audio.url} mime={car.audio.mime} carName={`${car.name} ${car.year}`} />}
           {!sold && (
             <div class="car__price-mobile">
               <p class="price tabular">{formatPrice(car.price) ?? 'Pris efter aftale'}</p>
@@ -101,6 +106,12 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
             </div>
           )}
         </header>
+
+        {car.notes && (
+          <section class="car__notes" aria-label="Kurts noter om bilen">
+            <KurtNotes notes={car.notes} />
+          </section>
+        )}
 
         <section class="gauges" aria-label="Nøgletal">
           <dl class="gauges__grid">
@@ -161,7 +172,7 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
             <>
               <p class="pricebox__label">Status</p>
               <p class="pricebox__sold">Solgt</p>
-              <p class="pricebox__note">Leder du efter en lignende bil? Kontakt Kurt – han holder øje med markedet.</p>
+              <p class="pricebox__note">Leder du efter en lignende bil? Kontakt Kurt – han holder øje med markedet. Eller <a href="#bilalarm">sæt en bilalarm</a>.</p>
             </>
           ) : (
             <>
@@ -230,6 +241,14 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
         </Form>
       </div>
     </section>
+
+    {sold && (
+      <section class="section car-alert-wrap" id="bilalarm">
+        <div class="container">
+          <CarAlert id="bilalarm-bil" univers={car.univers} model={`${car.make} ${car.model}`} heading="Vil du have besked om en lignende bil?" lead={`Kurt kan ikke love en ny ${car.make} ${car.model} – men han siger til, når der kommer en ind.`} />
+        </div>
+      </section>
+    )}
 
     {related.length > 0 && (
       <section class="section related" aria-labelledby="rel-title">
@@ -318,6 +337,10 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
   .car__price-mobile .muted { font-size: var(--fs-sm); }
   @media (min-width: 1024px) { .car__price-mobile { display: none; } }
 
+  .car__gallery--sold { position: relative; }
+  .car__sold-stamp { top: clamp(90px, 22vw, 260px); font-size: clamp(2.6rem, 1.6rem + 4vw, 5rem); }
+  .car__notes { margin-top: clamp(32px, 4vw, 48px); padding-inline: 6px; }
+
   /* Instrumentbræt */
   .gauges { margin-top: clamp(28px, 4vw, 44px); }
   .gauges__grid {
@@ -344,6 +367,11 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--fg-muted);
+    hyphens: manual;
+  }
+  @media (max-width: 400px) {
+    .gauge { padding: 14px 12px 16px; }
+    .gauge dt { letter-spacing: 0.14em; }
   }
   .gauge__num { font-size: clamp(1.5rem, 1.2rem + 1vw, 2.1rem); font-weight: 600; line-height: 1.1; color: var(--fg-soft); font-stretch: 112%; }
   [data-univers='klassisk'] .gauge__num { font-family: var(--f-serif); font-weight: 500; font-stretch: 100%; }
@@ -455,6 +483,7 @@ const shareText = encodeURIComponent(`${car.name} ${car.year} hos Kurt Christens
   .enquiry__phone { display: inline-flex; align-items: center; gap: 10px; font-size: var(--fs-lg); font-weight: 700; color: var(--fg-soft); text-decoration: none; font-stretch: 112%; }
   .enquiry__phone :global(svg) { width: 26px; height: 26px; color: var(--accent); }
 
+  .car-alert-wrap { padding-top: 0; scroll-margin-top: calc(var(--header-h) + 24px); }
   .related { border-top: 1px solid var(--rule); }
   .related__title { margin-bottom: clamp(28px, 4vw, 48px); }
   .related__grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }

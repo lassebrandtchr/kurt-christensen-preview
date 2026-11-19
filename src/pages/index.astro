@@ -6,6 +6,7 @@ import CarImage from '../components/CarImage.astro';
 import Marquee from '../components/Marquee.astro';
 import Portals from '../components/Portals.astro';
 import Icon from '../components/Icon.astro';
+import KurtNotes from '../components/KurtNotes.astro';
 import { getCars, featuredCar, priceNoteText } from '../lib/cars';
 import { SITE, formatPrice, formatKm, u } from '../lib/site';
 
@@ -13,6 +14,8 @@ const cars = await getCars();
 const forSale = cars.filter((c) => c.status !== 'solgt');
 const sold = cars.filter((c) => c.status === 'solgt');
 const featured = featuredCar(cars);
+// Kun biler, hvor Kurt selv har skrevet noter (til salg først), højst 3.
+const noted = cars.filter((c) => c.notes).slice(0, 3);
 const makes = [...new Set(cars.map((c) => c.make.toUpperCase()))];
 const marqueeItems = [...makes, 'KLASSISKE BILER', 'EKSKLUSIVE BILER', 'RIBEVEJ 11', 'BRAMMING'];
 const featuredMeta = featured
@@ -90,6 +93,22 @@ const values = [
       </div>
     </div>
   </section>
+
+  {noted.length > 0 && (
+    <section class="section notebook" aria-labelledby="notebook-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2 id="notebook-title" class="hairline-title section-title">Fra Kurts notesbog</h2>
+        </div>
+        <p class="notebook__sub muted reveal">Over 30 år som mekaniker. Her er, hvad Kurt selv skrev om bilerne.</p>
+        <div class="notebook__grid">
+          {noted.map((c, i) => (
+            <KurtNotes notes={c.notes!} variant="teaser" href={u(`/biler/${c.slug}/`)} carName={`${c.name} ${c.year}`} tilt={[-1.6, 1.1, -0.7][i]} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 
   <!-- Papir-ark: intro + hvorfor Kurt -->
   <section class="paper-sheet section intro" aria-labelledby="intro-title">
@@ -172,6 +191,8 @@ const values = [
 </BaseLayout>
 
 <style>
+  .notebook__sub { margin-top: 10px; text-align: center; font-size: var(--fs-sm); letter-spacing: 0.04em; }
+  .notebook__grid { display: grid; gap: clamp(32px, 4vw, 44px); margin-top: clamp(36px, 5vw, 56px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); padding-inline: 6px; }
   .section-head { margin-bottom: 10px; }
   .stock__sub { text-align: center; margin-bottom: clamp(32px, 5vw, 56px); font-size: var(--fs-sm); letter-spacing: 0.04em; }
   .card-grid {

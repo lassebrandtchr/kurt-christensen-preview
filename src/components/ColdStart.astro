@@ -1,0 +1,121 @@
+---
+/**
+ * "Hør den starte": afspiller til Kurts koldstart-optagelse.
+ * Vises KUN, når der er uploadet en lydfil (car.audio !== null). Ingen autoplay, preload="none".
+ */
+import Icon from './Icon.astro';
+import { u } from '../lib/site';
+
+interface Props { url: string; mime?: string | null; carName: string; }
+const { url, mime, carName } = Astro.props;
+const src = url.startsWith('/') ? u(url) : url;
+// 28 "søjler" i en fast, motor-agtig profil (ren dekoration – ikke målt på lyden)
+const bars = Array.from({ length: 28 }, (_, i) => Math.round(28 + 62 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.45))));
+---
+<div class="coldstart" data-coldstart>
+  <button type="button" class="coldstart__btn" data-cs-toggle aria-label={`Afspil koldstart af ${carName}`}>
+    <span class="coldstart__icon coldstart__icon--play"><Icon name="play" /></span>
+    <span class="coldstart__icon coldstart__icon--pause"><Icon name="pause" /></span>
+  </button>
+  <div class="coldstart__body">
+    <p class="coldstart__title">Hør den starte</p>
+    <div class="coldstart__track" aria-hidden="true">
+      <div class="coldstart__wave">{bars.map((h, i) => <span style={`--h:${h}%;--d:${(i % 7) * 70}ms`}></span>)}</div>
+      <div class="coldstart__wave coldstart__wave--fg">{bars.map((h, i) => <span style={`--h:${h}%;--d:${(i % 7) * 70}ms`}></span>)}</div>
+    </div>
+    <div class="coldstart__meta">
+      <span>Koldstart optaget af Kurt</span>
+      <span class="tabular" data-cs-time>0:00</span>
+    </div>
+  </div>
+  <audio preload="none" data-cs-audio>
+    <source src={src} type={mime || undefined} />
+  </audio>
+  <noscript><audio controls preload="none" src={src}></audio></noscript>
+</div>
+
+<script>
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  document.querySelectorAll<HTMLElement>('[data-coldstart]').forEach((root) => {
+    const audio = root.querySelector<HTMLAudioElement>('[data-cs-audio]')!;
+    const btn = root.querySelector<HTMLButtonElement>('[data-cs-toggle]')!;
+    const time = root.querySelector<HTMLElement>('[data-cs-time]')!;
+    const label = btn.getAttribute('aria-label') || '';
+    const set = (playing: boolean) => {
+      root.classList.toggle('is-playing', playing);
+      btn.setAttribute('aria-label', playing ? label.replace('Afspil', 'Pause') : label);
+    };
+    btn.addEventListener('click', () => {
+      if (audio.paused) {
+        document.querySelectorAll<HTMLAudioElement>('[data-cs-audio]').forEach((a) => a !== audio && a.pause());
+        audio.play().catch(() => root.classList.add('has-error'));
+      } else audio.pause();
+    });
+    audio.addEventListener('play', () => set(true));
+    audio.addEventListener('pause', () => set(false));
+    audio.addEventListener('ended', () => { set(false); root.style.setProperty('--p', '0'); });
+    audio.addEventListener('timeupdate', () => {
+      time.textContent = fmt(audio.currentTime);
+      if (audio.duration) root.style.setProperty('--p', String(audio.currentTime / audio.duration));
+    });
+  });
+</script>
+
+<style>
+  .coldstart {
+    --p: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px 14px 14px;
+    background: var(--surface, #141416);
+    border: 1px solid var(--rule);
+    max-width: 460px;
+  }
+  .coldstart__btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--fg-soft);
+    cursor: pointer;
+    transition: background 200ms, transform 200ms var(--ease-out);
+  }
+  .coldstart__btn:hover { background: color-mix(in srgb, var(--accent) 28%, transparent); transform: scale(1.04); }
+  .coldstart__btn :global(svg) { width: 22px; height: 22px; }
+  .coldstart__icon--play :global(svg) { transform: translateX(2px); }
+  .coldstart__icon--pause, .is-playing .coldstart__icon--play { display: none; }
+  .is-playing .coldstart__icon--pause { display: block; }
+  .coldstart__body { flex: 1; min-width: 0; display: grid; gap: 8px; }
+  .coldstart__title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-stretch: 112%;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-soft);
+  }
+  .coldstart__wave { display: flex; align-items: center; gap: 3px; height: 30px; }
+  .coldstart__wave span {
+    flex: 1;
+    height: var(--h);
+    background: var(--fg-muted);
+    opacity: 0.45;
+    transform-origin: center;
+  }
+  /* Fremgang: en guld-kopi af søjlerne klippes op fra venstre */
+  .coldstart__track { position: relative; }
+  .coldstart__wave--fg { position: absolute; inset: 0; clip-path: inset(0 calc((1 - var(--p)) * 100%) 0 0); }
+  .coldstart__wave--fg span { background: var(--accent); opacity: 1 !important; }
+  .is-playing .coldstart__wave span { animation: cs-bar 560ms ease-in-out infinite alternate; animation-delay: var(--d); opacity: 0.8; }
+  @keyframes cs-bar { from { transform: scaleY(0.55); } to { transform: scaleY(1.08); } }
+  .coldstart__meta { display: flex; justify-content: space-between; gap: 12px; font-size: var(--fs-xs); color: var(--fg-muted); }
+  .has-error .coldstart__meta span:first-child::after { content: ' · kunne ikke afspilles'; color: #f08a83; }
+  @media (prefers-reduced-motion: reduce) {
+    .is-playing .coldstart__wave span { animation: none; }
+  }
+</style>

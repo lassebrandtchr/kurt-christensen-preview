@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StockGrid from '../components/StockGrid.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CarAlert from '../components/CarAlert.astro';
 import { getCars } from '../lib/cars';
 import { SITE, u } from '../lib/site';
 import { breadcrumbs } from '../lib/schema';
@@ -42,8 +43,11 @@ const itemList = {
         <p class="empty">Lige nu er alle biler solgt, men nye er på vej. Ring til Kurt på <a href={SITE.phoneHref}>{SITE.phone}</a>, eller fortæl os, hvad du leder efter.</p>
       )}
       <div class="after-grid">
-        <p class="after-grid__girardo">Ikke alt er online. Leder du efter noget bestemt? <a href={SITE.phoneHref}>Ring til Kurt</a>.</p>
+        <p class="after-grid__girardo">Ikke alt er online. Leder du efter noget bestemt? <a href={SITE.phoneHref}>Ring til Kurt</a>, eller <a href="#bilalarm">sæt en bilalarm</a>.</p>
         <p class="after-grid__note">Vi tager forbehold for, at bilen kan være solgt. Ring derfor, inden du kører hjemmefra.</p>
+      </div>
+      <div class="stock-alert" id="bilalarm">
+        <CarAlert id="bilalarm-lager" />
       </div>
     </div>
   </section>
@@ -60,5 +64,6 @@ const itemList = {
   .after-grid { margin-top: clamp(40px, 6vw, 72px); padding-top: 28px; border-top: 1px solid var(--line); display: grid; gap: 10px; text-align: center; }
   .after-grid__girardo { font-family: var(--f-serif); font-style: italic; font-size: var(--fs-md); color: var(--champagne); }
   .after-grid__note { font-size: var(--fs-sm); color: var(--fg-muted); }
+  .stock-alert { margin-top: clamp(40px, 6vw, 72px); scroll-margin-top: calc(var(--header-h) + 24px); }
   .empty { padding: 48px 0; text-align: center; }
 </style>

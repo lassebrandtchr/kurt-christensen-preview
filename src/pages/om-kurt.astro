@@ -95,7 +95,8 @@ const statement = 'Når du kontakter Kurt, er det Kurt, der tager telefonen. Det
     font-stretch: 125%;
     font-weight: 800;
     text-transform: uppercase;
-    font-size: var(--fs-2xl);
+    /* "CHRISTENSEN" er ca. 9,2 em bred: skrifstørrelsen må aldrig blive større, end at ordet kan være der. */
+    font-size: min(var(--fs-2xl), calc((100vw - 2 * var(--gutter)) / 9.7));
     line-height: 0.95;
   }
   .about-head__h1 .light { font-weight: 300; color: var(--silver); display: block; }

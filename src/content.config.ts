@@ -46,6 +46,11 @@ const cars = defineCollection({
         .array(z.object({ src: image(), alt: z.string().optional() }))
         .optional()
         .default([]),
+      notes: z
+        .object({ lookedFor: z.string().optional(), found: z.string().optional(), verdict: z.string().optional() })
+        .optional(),
+      /** Sti til lydfil i public/, fx "/lyd/bil.m4a" */
+      audio: z.string().optional(),
     }),
 });
 

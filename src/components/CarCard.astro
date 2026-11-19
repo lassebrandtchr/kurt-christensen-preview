@@ -1,5 +1,7 @@
 ---
 import CarImage from './CarImage.astro';
+import Icon from './Icon.astro';
+import '@fontsource/kalam/latin-400.css';
 import type { Car } from '../lib/cars';
 import { statusLabel, universLabel, priceNoteText } from '../lib/cars';
 import { formatPrice, formatKm, u } from '../lib/site';
@@ -18,6 +20,8 @@ const sold = car.status === 'solgt';
 const meta = [String(car.year), formatKm(car.km), car.color?.split(' med ')[0]].filter(Boolean).join(' · ');
 const specLine = [car.engine, car.hp ? `${car.hp} hk` : null, car.gearbox].filter(Boolean).join(' · ');
 const href = u(`/biler/${car.slug}/`);
+const noteLine = car.notes ? (car.notes.found ?? car.notes.lookedFor ?? '') : '';
+const noteShort = noteLine.length > 90 ? noteLine.slice(0, 88).replace(/\s+\S*$/, '') + ' …' : noteLine;
 ---
 <article
   class:list={['car-card', 'reveal', `car-card--${car.univers}`, { 'car-card--sold': sold }]}
@@ -43,10 +47,10 @@ const href = u(`/biler/${car.slug}/`);
         vt={`car-${car.slug}`}
       />
       <div class="car-card__badges">
-        {car.status !== 'til-salg' && (
-          <span class:list={['badge', { 'badge--sold': sold, 'badge--reserved': car.status === 'reserveret' }]}>{statusLabel[car.status]}</span>
-        )}
+        {car.status === 'reserveret' && <span class="badge badge--reserved">{statusLabel[car.status]}</span>}
+        {car.audio && <span class="badge badge--sound" title="Hør koldstarten på bilsiden"><Icon name="sound" /> Lyd</span>}
       </div>
+      {sold && <span class="sold-stamp" data-sold-stamp aria-hidden="true">Solgt</span>}
       {showUnivers && car.univers === 'klassisk' && <span class="stamp car-card__stamp" aria-hidden="true">Klassiker</span>}
       {specLine && (
         <div class="car-card__specs" aria-hidden="true"><span>{specLine}</span></div>
@@ -60,6 +64,9 @@ const href = u(`/biler/${car.slug}/`);
       </p>
       <H class="car-card__title">{car.name}</H>
       <p class="car-card__meta tabular">{meta}</p>
+      {noteShort && (
+        <p class="car-card__knote"><span class="car-card__knote-label"><Icon name="pen" /> Kurts note</span><span class="car-card__knote-text">“{noteShort}”</span></p>
+      )}
       <span class="car-card__rule" aria-hidden="true"></span>
       <div class="car-card__foot">
         {sold ? (
@@ -192,6 +199,31 @@ const href = u(`/biler/${car.slug}/`);
   }
   .car-card--klassisk .car-card__title { font-size: 1.6rem; letter-spacing: -0.01em; }
   .car-card__meta { color: var(--fg-muted); font-size: var(--fs-sm); }
+  .car-card__knote {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 10px 12px 10px 14px;
+    background: #f6f0e2;
+    color: #1d2a4a;
+    border-left: 3px solid rgba(160, 40, 40, 0.45);
+    transform: rotate(-0.6deg);
+  }
+  .car-card__knote-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.625rem;
+    font-weight: 700;
+    font-stretch: 112%;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #7a5a22;
+  }
+  .car-card__knote-label :global(svg) { width: 13px; height: 13px; }
+  .car-card__knote-text { font-family: 'Kalam', cursive; font-size: 1.05rem; line-height: 1.35; overflow-wrap: anywhere; }
+  :global(.badge--sound) { gap: 6px; background: rgba(10, 10, 11, 0.7); color: var(--champagne); border-color: rgba(201, 164, 106, 0.6); }
+  :global(.badge--sound svg) { width: 14px; height: 14px; }
 
   .car-card__rule {
     display: block;

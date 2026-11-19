@@ -12,3 +12,4 @@ studio/dist/
 studio/seed/
 .impeccable/
 studio/.sanity/
+studio/.tmp-scripts/

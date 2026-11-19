@@ -9,7 +9,7 @@ const year = new Date().getFullYear();
   <Shield class="site-footer__shield" strokeWidth={1} />
   <div class="container site-footer__grid">
     <div class="site-footer__brand">
-      <Logo width={260} loading="lazy" alt="Kurt Christensen – vi handler med klassiske og eksklusive biler" />
+      <Logo width={480} loading="lazy" alt="Kurt Christensen – vi handler med klassiske og eksklusive biler" />
       <p class="site-footer__cta">Har du fundet drømmebilen? Ring til Kurt – så finder I et tidspunkt, hvor du kan se den.</p>
       <a href={SITE.phoneHref} class="btn btn--primary magnetic"><Icon name="phone" />Ring til Kurt</a>
     </div>
@@ -78,10 +78,17 @@ const year = new Date().getFullYear();
     gap: 40px;
     grid-template-columns: 1fr;
   }
-  @media (min-width: 720px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1080px) { .site-footer__grid { grid-template-columns: 1.6fr 1fr 1fr 1fr; } }
-  .site-footer__brand { display: grid; gap: 20px; justify-items: start; }
-  .site-footer__brand :global(img) { width: 240px; height: auto; }
+  @media (min-width: 720px) {
+    .site-footer__grid { grid-template-columns: repeat(3, 1fr); }
+    .site-footer__brand { grid-column: 1 / -1; }
+  }
+  @media (min-width: 1280px) {
+    .site-footer__grid { grid-template-columns: minmax(480px, 1.6fr) 1fr 1fr 1fr; }
+    .site-footer__brand { grid-column: auto; }
+  }
+  /* Logoet er dobbelt størrelse (480 px) og centreret over teksten under. */
+  .site-footer__brand { display: grid; gap: 20px; justify-items: center; text-align: center; }
+  .site-footer__brand :global(img) { width: min(480px, 100%); height: auto; }
   .site-footer__cta { font-family: var(--f-serif); font-style: italic; font-size: 1.25rem; line-height: 1.4; color: var(--champagne); max-width: 34ch; }
   .site-footer__h {
     font-size: var(--fs-xs);

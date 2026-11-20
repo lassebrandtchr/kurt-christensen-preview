@@ -443,6 +443,12 @@ body[data-univers='klassisk'] .grain {
 .btn--gold { --btn-border: var(--gold); --btn-bg: var(--gold); --btn-fg: var(--ink); }
 .btn--gold:hover { --btn-bg: var(--champagne); --btn-border: var(--champagne); }
 .btn--block { width: 100%; }
+/* Ring-knap: etiket over nummer */
+.btn--call { min-height: 62px; padding-block: 10px; gap: 14px; }
+.btn__stack { display: grid; justify-items: start; gap: 3px; line-height: 1.1; text-align: left; }
+.btn__label, .btn__num { white-space: nowrap; }
+.btn__label { font-size: 0.8em; letter-spacing: 0.16em; opacity: 0.88; }
+.btn__num { font-size: 1.12em; font-weight: 700; letter-spacing: 0.08em; }
 .btn svg { width: 18px; height: 18px; flex: none; }
 .btn[aria-disabled='true'], .btn:disabled { opacity: 0.6; cursor: progress; }
 

@@ -1,4 +1,5 @@
 ---
+import CallButton from '../components/CallButton.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
 import { SITE, u } from '../lib/site';
@@ -11,7 +12,7 @@ import { SITE, u } from '../lib/site';
       <p class="lead">Siden findes ikke længere – måske er bilen solgt. Se de biler, der er til salg lige nu, eller ring til Kurt.</p>
       <div class="nf__ctas">
         <a href={u("/biler-til-salg/")} class="btn btn--gold">Se biler til salg <Icon name="arrow" /></a>
-        <a href={SITE.phoneHref} class="btn btn--primary"><Icon name="phone" /> Ring {SITE.phone}</a>
+        <CallButton magnetic={false} />
       </div>
     </div>
   </section>

@@ -1,4 +1,5 @@
 ---
+import CallButton from './CallButton.astro';
 import { Picture } from 'astro:assets';
 import Shield from './Shield.astro';
 import Icon from './Icon.astro';
@@ -46,7 +47,7 @@ const hero = Object.values(heroGlob)[0]?.default;
     <h1 id="hero-title" class="hero__title" data-hero-h1>Klassiske og eksklusive biler – håndplukket i Bramming</h1>
     <div class="hero__ctas" data-hero-cta>
       <a href={u("/biler-til-salg/")} class="btn btn--gold magnetic">Se biler til salg <Icon name="arrow" /></a>
-      <a href={SITE.phoneHref} class="btn btn--primary magnetic"><Icon name="phone" /> Ring til Kurt – <span class="tabular">{SITE.phone}</span></a>
+      <CallButton />
     </div>
   </div>
 </section>

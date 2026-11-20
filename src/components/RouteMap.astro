@@ -1,56 +1,298 @@
 ---
 /**
- * Skematisk, cookie-fri kortillustration (ingen iframe/embed). Viser Bramming i forhold til
- * Esbjerg, Ribe og Vejen. Ikke målfast – til rutevejledning linkes til Google Maps / OpenStreetMap.
+ * Kort over vejen til Kurt, tegnet ud fra rigtige OpenStreetMap-data (se scripts/build-route-map.py).
+ * Animeres ind: vejnettet toner frem, ruterne fra Esbjerg, Ribe og Vejen tegnes ind med en lille "bil",
+ * og til sidst lander KC-nålen på Ribevej 11.
+ * Google Maps indlæses KUN, når man trykker "Vis Google-kort" (ingen Google-kald eller cookies før).
  */
+import map from '../data/route-map.json';
 import { SITE } from '../lib/site';
+
+const { w, h, kmW, kurt, roads, coast, routes, labels } = map;
+const [kx, ky] = kurt;
+const order = ['esbjerg', 'ribe', 'vejen'] as const;
+const scale5 = (5 / kmW) * w; // 5 km i kort-enheder
+const hex = (cx: number, cy: number, r: number) =>
+  Array.from({ length: 6 }, (_, i) => {
+    const a = (Math.PI / 3) * i - Math.PI / 2;
+    return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
+  }).join(' ');
+const embed = `https://www.google.com/maps?q=${encodeURIComponent(`${SITE.street}, ${SITE.postalCode} ${SITE.city}`)}&z=13&output=embed`;
+// Placering af by-etiketter (så de ikke rammer kanten eller ruterne)
+const labelPos: Record<string, { dx: number; dy: number; dy2: number; anchor: 'start' | 'middle' | 'end' }> = {
+  esbjerg: { dx: 0, dy: -46, dy2: -20, anchor: 'middle' },
+  ribe: { dx: 18, dy: 0, dy2: 26, anchor: 'start' },
+  vejen: { dx: 6, dy: 40, dy2: 66, anchor: 'end' },
+};
 ---
-<figure class="map">
-  <svg viewBox="0 0 800 460" role="img" aria-labelledby="map-title map-desc">
-    <title id="map-title">Skematisk kort: Kurt Christensen, Ribevej 11, 6740 Bramming</title>
-    <desc id="map-desc">Bramming ligger øst for Esbjerg og nord for Ribe i Sydvestjylland.</desc>
-    <defs>
-      <pattern id="map-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-        <path d="M40 0H0V40" fill="none" stroke="#2C2D31" stroke-width="1" />
-      </pattern>
-      <radialGradient id="map-glow" cx="50%" cy="50%" r="50%">
-        <stop offset="0" stop-color="#C9A46A" stop-opacity=".35" />
-        <stop offset="1" stop-color="#C9A46A" stop-opacity="0" />
-      </radialGradient>
-    </defs>
-    <rect width="800" height="460" fill="#141416" />
-    <rect width="800" height="460" fill="url(#map-grid)" />
-    <!-- Kystlinje mod vest (stiliseret) -->
-    <path d="M0 0 H70 C90 80 60 140 85 200 C110 260 70 320 95 380 C110 420 90 440 100 460 H0 Z" fill="#0A0A0B" />
-    <!-- Veje (stiliseret) -->
-    <path d="M110 205 C230 210 300 200 400 214 C520 230 600 205 760 196" fill="none" stroke="#3a3b40" stroke-width="6" stroke-linecap="round" />
-    <path d="M400 214 C410 280 425 340 445 420" fill="none" stroke="#3a3b40" stroke-width="6" stroke-linecap="round" />
-    <path d="M400 214 C410 280 425 340 445 420" fill="none" stroke="#C9A46A" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round" />
-    <!-- Byer -->
-    <g font-family="Archivo Variable, Archivo, sans-serif" font-size="13" letter-spacing="2.5" fill="#9A9DA3">
-      <circle cx="128" cy="205" r="5" fill="#9A9DA3" /><text x="140" y="190">ESBJERG</text>
-      <circle cx="445" cy="420" r="5" fill="#9A9DA3" /><text x="460" y="425">RIBE</text>
-      <circle cx="740" cy="197" r="5" fill="#9A9DA3" /><text x="660" y="182">VEJEN</text>
-      <text x="420" y="320" font-size="11" fill="#6f7277" transform="rotate(76 420 320)">RIBEVEJ</text>
-    </g>
-    <!-- Bramming / Kurt -->
-    <circle cx="400" cy="214" r="70" fill="url(#map-glow)" />
-    <path d="M400 168 L428 176 L428 204 L400 214 L372 204 L372 176 Z" fill="#0A0A0B" stroke="#C9A46A" stroke-width="2" />
-    <text x="400" y="197" text-anchor="middle" font-family="Archivo Variable, Archivo, sans-serif" font-style="italic" font-weight="800" font-size="15" fill="#ECE9E3">KC</text>
-    <g font-family="Archivo Variable, Archivo, sans-serif">
-      <text x="400" y="250" text-anchor="middle" font-size="16" font-weight="700" letter-spacing="3" fill="#E8D9BC">BRAMMING</text>
-      <text x="400" y="272" text-anchor="middle" font-size="12" letter-spacing="1.5" fill="#9A9DA3">{SITE.street}, {SITE.postalCode} {SITE.city}</text>
-    </g>
-  </svg>
-  <figcaption>
-    <span>Skematisk kort – ikke målfast.</span>
-    <a href={SITE.directionsUrl} target="_blank" rel="noopener">Rutevejledning i Google Maps</a>
-    <a href={SITE.osmUrl} target="_blank" rel="noopener">Åbn i OpenStreetMap</a>
+<figure class="rmap" data-rmap>
+  <div class="rmap__stage">
+    <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-labelledby="rmap-title rmap-desc" class="rmap__svg">
+      <title id="rmap-title">Kort: Kurt Christensen, {SITE.street}, {SITE.postalCode} {SITE.city}</title>
+      <desc id="rmap-desc">
+        Bramming ligger i Sydvestjylland. Der er {routes.esbjerg.km} km i bil fra Esbjerg, {routes.ribe.km} km fra Ribe og {routes.vejen.km} km fra Vejen.
+      </desc>
+      <defs>
+        <pattern id="rmap-grid" width="50" height="50" patternUnits="userSpaceOnUse">
+          <path d="M50 0H0V50" fill="none" stroke="#1d1e22" stroke-width="1" />
+        </pattern>
+        <radialGradient id="rmap-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#C9A46A" stop-opacity=".42" />
+          <stop offset="1" stop-color="#C9A46A" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="rmap-vignette" cx="50%" cy="50%" r="70%">
+          <stop offset=".55" stop-color="#0d0d0f" stop-opacity="0" />
+          <stop offset="1" stop-color="#0d0d0f" stop-opacity=".85" />
+        </radialGradient>
+        <filter id="rmap-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" /></filter>
+        {order.map((k) => <path id={`rmap-route-${k}`} d={routes[k].d} />)}
+      </defs>
+
+      <rect width={w} height={h} fill="#111114" />
+      <rect width={w} height={h} fill="url(#rmap-grid)" class="rmap__grid" />
+
+      <!-- Kyst (Vadehavet, Fanø) -->
+      <g class="rmap__coast" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d={coast} stroke="#2a3a44" stroke-width="7" opacity=".35" filter="url(#rmap-blur)" />
+        <path d={coast} stroke="#4c5d68" stroke-width="1.6" pathLength="1" class="rmap__draw" />
+      </g>
+
+      <!-- Vejnet -->
+      <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d={roads.local} stroke="#212226" stroke-width="0.9" class="rmap__roads rmap__roads--local" />
+        <path d={roads.minor} stroke="#2e3035" stroke-width="1.3" class="rmap__roads rmap__roads--minor" />
+        <path d={roads.major} stroke="#45484f" stroke-width="2.4" class="rmap__roads rmap__roads--major" />
+      </g>
+
+      <g class="rmap__water" font-family="Fraunces, Georgia, serif" font-style="italic" fill="#56646d">
+        <text x={labels.fano[0]} y={labels.fano[1]} font-size="22" text-anchor="middle">Fanø</text>
+        <text x={labels.vadehavet[0]} y={labels.vadehavet[1]} font-size="22" letter-spacing="6" text-anchor="middle">Vadehavet</text>
+      </g>
+
+      <!-- Ruterne til Kurt -->
+      {order.map((k, i) => (
+        <g class="rmap__route" data-route={k} style={`--r:${i}`}>
+          <use href={`#rmap-route-${k}`} fill="none" stroke="#C9A46A" stroke-width="10" opacity=".14" filter="url(#rmap-blur)" class="rmap__route-glow" />
+          <path d={routes[k].d} fill="none" stroke="#C9A46A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="rmap__route-line" />
+          <circle r="6" fill="#F4E6C8" class="rmap__car">
+            <animateMotion dur="2.2s" begin="indefinite" fill="freeze" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.45 0 0.2 1">
+              <mpath href={`#rmap-route-${k}`} />
+            </animateMotion>
+          </circle>
+        </g>
+      ))}
+
+      <!-- Byer -->
+      <g class="rmap__towns" font-family="Archivo Variable, Archivo, sans-serif" stroke="#111114" stroke-width="7" stroke-linejoin="round" paint-order="stroke">
+        {order.map((k, i) => {
+          const r = routes[k];
+          const p = labelPos[k];
+          return (
+            <g class="rmap__town" style={`--r:${i}`}>
+              <circle cx={r.at[0]} cy={r.at[1]} r="7" fill="#111114" stroke="#9A9DA3" stroke-width="2.5" paint-order="normal" />
+              <text x={r.at[0] + p.dx} y={r.at[1] + p.dy} text-anchor={p.anchor} font-size="24" font-weight="700" letter-spacing="4" fill="#D7D9DC">{r.name.toUpperCase()}</text>
+              <text x={r.at[0] + p.dx} y={r.at[1] + p.dy2} text-anchor={p.anchor} font-size="19" letter-spacing="1.5" fill="#C9A46A">{r.km} km</text>
+            </g>
+          );
+        })}
+      </g>
+
+      <!-- Kurt -->
+      <g class="rmap__kurt">
+        <circle cx={kx} cy={ky} r="90" fill="url(#rmap-glow)" class="rmap__halo" />
+        <circle cx={kx} cy={ky} r="16" fill="none" stroke="#C9A46A" stroke-width="2" class="rmap__ping" />
+        <circle cx={kx} cy={ky} r="16" fill="none" stroke="#C9A46A" stroke-width="2" class="rmap__ping rmap__ping--2" />
+        <g class="rmap__pin">
+          <path d={`M${kx} ${ky} L${kx - 9} ${ky - 22} L${kx + 9} ${ky - 22} Z`} fill="#C9A46A" />
+          <polygon points={hex(kx, ky - 46, 30)} fill="#0A0A0B" stroke="#C9A46A" stroke-width="2.5" />
+          <text x={kx} y={ky - 39} text-anchor="middle" font-family="Archivo Variable, Archivo, sans-serif" font-style="italic" font-weight="800" font-size="21" fill="#ECE9E3">KC</text>
+        </g>
+        <g class="rmap__kurt-label" font-family="Archivo Variable, Archivo, sans-serif" text-anchor="middle" stroke="#111114" stroke-width="8" stroke-linejoin="round" paint-order="stroke">
+          <text x={kx} y={ky + 40} font-size="25" font-weight="700" letter-spacing="4" fill="#E8D9BC">KURT CHRISTENSEN</text>
+          <text x={kx} y={ky + 66} font-size="18" letter-spacing="1.5" fill="#9A9DA3">{SITE.street} · {SITE.postalCode} {SITE.city}</text>
+        </g>
+      </g>
+
+      <rect width={w} height={h} fill="url(#rmap-vignette)" pointer-events="none" />
+
+      <!-- Nordpil og målestok -->
+      <g class="rmap__chrome" font-family="Archivo Variable, Archivo, sans-serif" fill="#7d8087">
+        <g transform={`translate(${w - 46} 46)`}>
+          <circle r="22" fill="none" stroke="#3a3c42" />
+          <path d="M0 -15 L6 4 L0 0 L-6 4 Z" fill="#C9A46A" />
+          <text y="-28" text-anchor="middle" font-size="14" font-weight="700" letter-spacing="2">N</text>
+        </g>
+        <g transform={`translate(32 ${h - 34})`}>
+          <path d={`M0 0 H${scale5.toFixed(1)} M0 -6 V6 M${scale5.toFixed(1)} -6 V6`} stroke="#7d8087" stroke-width="2" />
+          <text x={(scale5 + 12).toFixed(1)} y="6" font-size="16" letter-spacing="1.5">5 km</text>
+        </g>
+      </g>
+    </svg>
+    <div class="rmap__gmap" data-gmap hidden></div>
+  </div>
+
+  <figcaption class="rmap__bar">
+    <div class="rmap__from" role="group" aria-label="Vis ruten">
+      {order.map((k) => (
+        <button type="button" class="rmap__chip" data-replay={k}>
+          Fra {routes[k].name} <span class="tabular">{routes[k].km} km</span>
+        </button>
+      ))}
+    </div>
+    <div class="rmap__actions">
+      <button type="button" class="rmap__toggle" data-gmap-toggle aria-pressed="false">
+        <span data-label-off>Vis Google-kort</span><span data-label-on hidden>Vis Kurts kort</span>
+      </button>
+      <a href={SITE.directionsUrl} target="_blank" rel="noopener">Rutevejledning</a>
+    </div>
+    <p class="rmap__fine">
+      Google-kortet indlæses først, når du trykker på knappen. Kortdata © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap-bidragydere</a>.
+    </p>
   </figcaption>
 </figure>
+
+<script define:vars={{ embed }}>
+  const root = document.querySelector('[data-rmap]');
+  if (root) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const drive = (route, delay = 0) => {
+      const anim = route.querySelector('animateMotion');
+      route.classList.remove('is-driving');
+      void route.getBoundingClientRect();
+      route.classList.add('is-driving');
+      if (anim && !reduce) setTimeout(() => { try { anim.beginElement(); } catch (e) {} }, delay);
+    };
+    const routes = [...root.querySelectorAll('.rmap__route')];
+    const start = () => {
+      root.classList.add('is-in');
+      routes.forEach((r, i) => drive(r, 700 + i * 260));
+    };
+    if (reduce || !('IntersectionObserver' in window)) start();
+    else {
+      const io = new IntersectionObserver((es) => {
+        if (es.some((e) => e.isIntersecting)) { start(); io.disconnect(); }
+      }, { threshold: 0.3 });
+      io.observe(root);
+    }
+    root.querySelectorAll('[data-replay]').forEach((b) => b.addEventListener('click', () => {
+      const r = root.querySelector(`.rmap__route[data-route="${b.dataset.replay}"]`);
+      routes.forEach((x) => x.classList.toggle('is-focus', x === r));
+      if (r) drive(r);
+    }));
+
+    // Google-kort: indlæses først ved klik
+    const toggle = root.querySelector('[data-gmap-toggle]');
+    const box = root.querySelector('[data-gmap]');
+    toggle.addEventListener('click', () => {
+      const on = toggle.getAttribute('aria-pressed') !== 'true';
+      if (on && !box.firstChild) {
+        const f = document.createElement('iframe');
+        f.src = embed;
+        f.title = 'Google-kort: Ribevej 11, 6740 Bramming';
+        f.loading = 'lazy';
+        f.referrerPolicy = 'no-referrer-when-downgrade';
+        f.allowFullscreen = true;
+        box.appendChild(f);
+      }
+      box.hidden = !on;
+      toggle.setAttribute('aria-pressed', String(on));
+      toggle.querySelector('[data-label-off]').hidden = on;
+      toggle.querySelector('[data-label-on]').hidden = !on;
+    });
+  }
+</script>
+
 <style>
-  .map { margin: 0; border: 1px solid var(--line); background: var(--charcoal); }
-  .map svg { width: 100%; height: auto; }
-  .map figcaption { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 14px 18px; font-size: var(--fs-sm); color: var(--silver-dim); border-top: 1px solid var(--line); }
-  .map figcaption a { color: var(--champagne); }
+  .rmap { margin: 0; border: 1px solid var(--line); background: #111114; }
+  .rmap__stage { position: relative; }
+  .rmap__svg { display: block; width: 100%; height: auto; }
+  .rmap__gmap { position: absolute; inset: 0; background: #111114; }
+  .rmap__gmap :global(iframe) { width: 100%; height: 100%; border: 0; display: block; filter: grayscale(0.15) contrast(1.05); }
+  @media (max-width: 640px) {
+    /* På mobil er Google-kortet højere end tegningen, så man kan bruge det */
+    .rmap__stage:has(.rmap__gmap:not([hidden])) { min-height: 380px; }
+  }
+
+  /* --- Animation (progressiv: uden JS står alt fremme) --- */
+  :global(.js) .rmap__grid,
+  :global(.js) .rmap__roads,
+  :global(.js) .rmap__water,
+  :global(.js) .rmap__town,
+  :global(.js) .rmap__kurt-label,
+  :global(.js) .rmap__chrome { opacity: 0; transition: opacity 900ms var(--ease-out); }
+  :global(.js) .rmap__draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 2200ms cubic-bezier(0.45, 0, 0.2, 1); }
+  :global(.js) .rmap__route-line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  :global(.js) .rmap__route-glow, :global(.js) .rmap__car { opacity: 0; }
+  :global(.js) .rmap__pin { opacity: 0; transform: translateY(-40px); transform-box: fill-box; }
+  :global(.js) .rmap__halo { opacity: 0; transform: scale(0.4); transform-box: fill-box; transform-origin: center; }
+
+  .is-in .rmap__grid { opacity: 1; }
+  .is-in .rmap__draw { stroke-dashoffset: 0; }
+  .is-in .rmap__roads--local { opacity: 1; transition-delay: 150ms; }
+  .is-in .rmap__roads--minor { opacity: 1; transition-delay: 300ms; }
+  .is-in .rmap__roads--major { opacity: 1; transition-delay: 450ms; }
+  .is-in .rmap__water { opacity: 1; transition-delay: 900ms; }
+  .is-in .rmap__town { opacity: 1; transition-delay: calc(600ms + var(--r) * 260ms); }
+  .is-in .rmap__chrome { opacity: 1; transition-delay: 1200ms; }
+
+  .rmap__route.is-driving .rmap__route-line { animation: rmap-draw 2.2s cubic-bezier(0.45, 0, 0.2, 1) forwards; }
+  .rmap__route.is-driving .rmap__route-glow { animation: rmap-fade 2.2s ease forwards; }
+  .rmap__route.is-driving .rmap__car { animation: rmap-car 2.4s ease forwards; }
+  @keyframes rmap-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes rmap-fade { from { opacity: 0; } to { opacity: 0.14; } }
+  @keyframes rmap-car { 0% { opacity: 0; } 8% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+  /* Første gang: ruterne starter forskudt (samme forsinkelse som "bilerne" i scriptet) */
+  .is-in .rmap__route.is-driving:not(.is-focus) .rmap__route-line,
+  .is-in .rmap__route.is-driving:not(.is-focus) .rmap__route-glow,
+  .is-in .rmap__route.is-driving:not(.is-focus) .rmap__car { animation-delay: calc(700ms + var(--r) * 260ms); }
+  .rmap__route.is-focus .rmap__route-line { stroke-width: 4.5; }
+
+  .is-in .rmap__pin { opacity: 1; transform: none; transition: opacity 400ms ease 2700ms, transform 800ms var(--ease-out) 2700ms; }
+  .is-in .rmap__halo { opacity: 1; transform: none; transition: opacity 900ms ease 2800ms, transform 1200ms var(--ease-out) 2800ms; }
+  .is-in .rmap__kurt-label { opacity: 1; transition-delay: 3000ms; }
+  .rmap__ping { opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .is-in .rmap__ping { animation: rmap-ping 2.6s ease-out 3100ms 3; }
+  .is-in .rmap__ping--2 { animation-delay: 4400ms; }
+  @keyframes rmap-ping { 0% { opacity: 0.9; transform: scale(1); } 100% { opacity: 0; transform: scale(4.2); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rmap__route.is-driving .rmap__route-line { animation: none; stroke-dashoffset: 0; }
+    .rmap__route.is-driving .rmap__route-glow { animation: none; opacity: 0.14; }
+    .rmap__car, .rmap__ping { display: none; }
+    .is-in .rmap__pin, .is-in .rmap__halo { transition-delay: 0ms; }
+  }
+
+  /* --- Bjælke under kortet --- */
+  .rmap__bar { display: grid; gap: 14px; padding: 16px 18px 18px; border-top: 1px solid var(--line); }
+  .rmap__from { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rmap__chip {
+    display: inline-flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--fg-soft);
+    font: inherit;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    transition: border-color 200ms, color 200ms;
+  }
+  .rmap__chip .tabular { color: var(--gold); }
+  .rmap__chip:hover, .rmap__chip:focus-visible { border-color: var(--gold); color: var(--fg); }
+  .rmap__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; }
+  .rmap__toggle {
+    padding: 10px 18px;
+    border: 1px solid var(--gold);
+    background: color-mix(in srgb, var(--gold) 12%, transparent);
+    color: var(--champagne);
+    font: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+  }
+  .rmap__toggle:hover { background: color-mix(in srgb, var(--gold) 24%, transparent); }
+  .rmap__actions a, .rmap__fine a { color: var(--champagne); }
+  .rmap__fine { font-size: var(--fs-xs); color: var(--silver-dim); }
 </style>

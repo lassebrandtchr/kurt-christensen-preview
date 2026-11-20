@@ -12,7 +12,7 @@ export const SITE = {
   country: 'DK',
   region: 'Syddanmark',
   // Omtrentlige koordinater for Bramming by (bruges kun i JSON-LD som område-angivelse).
-  geo: { lat: 55.4657, lng: 8.7027 },
+  geo: { lat: 55.46282, lng: 8.705573 }, // Ribevej 11 (OpenStreetMap/Nominatim)
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Ribevej+11%2C+6740+Bramming',
   directionsUrl: 'https://www.google.com/maps/dir/?api=1&destination=Ribevej+11%2C+6740+Bramming',
   osmUrl: 'https://www.openstreetmap.org/search?query=Ribevej%2011%2C%206740%20Bramming',

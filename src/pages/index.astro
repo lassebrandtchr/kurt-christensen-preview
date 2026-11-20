@@ -1,4 +1,5 @@
 ---
+import CallButton from '../components/CallButton.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroShield from '../components/HeroShield.astro';
 import CarCard from '../components/CarCard.astro';
@@ -183,7 +184,7 @@ const values = [
       <h2 id="cta-title" class="cta-band__h">Har du fundet drømmebilen?</h2>
       <p>Ring til Kurt på {SITE.phone} – så finder I et tidspunkt, hvor du kan se den.</p>
       <div class="cta-band__ctas">
-        <a href={SITE.phoneHref} class="btn btn--primary magnetic"><Icon name="phone" /> Ring til Kurt</a>
+        <CallButton />
         <a href={u("/kontakt/")} class="btn btn--secondary">Skriv til Kurt</a>
       </div>
     </div>

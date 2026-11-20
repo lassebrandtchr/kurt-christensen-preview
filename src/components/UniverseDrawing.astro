@@ -1,0 +1,100 @@
+---
+/**
+ * Stregtegnet bil i universsidernes top. Tegningen hentes efter sideindlæsning og "tegnes" ind
+ * streg for streg (hver delkontur får sin egen streg), hvorefter fyldet toner frem.
+ * Klassisk: blæk på papir. Eksklusiv: guldstreg, sølvfyld og en svag guldglød.
+ */
+import { u } from '../lib/site';
+interface Props { univers: 'klassisk' | 'eksklusiv'; }
+const { univers } = Astro.props;
+const src = univers === 'klassisk' ? '/drawings/ferrari-308-gts.svg' : '/drawings/lamborghini-gallardo-lp560-4.svg';
+const ratio = univers === 'klassisk' ? '1582 / 462' : '1475 / 425';
+---
+<div class:list={['udraw', `udraw--${univers}`]} data-udraw={u(src)} style={`--ar:${ratio}`} aria-hidden="true">
+  <div class="udraw__car"></div>
+  <span class="udraw__floor"></span>
+  <slot />
+</div>
+
+<script>
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-udraw]').forEach(async (root) => {
+    const host = root.querySelector<HTMLElement>('.udraw__car')!;
+    try {
+      host.innerHTML = await (await fetch(root.dataset.udraw!)).text();
+    } catch { root.classList.add('is-failed'); return; }
+    const svg = host.querySelector('svg');
+    if (!svg) return;
+    // Del hver sammensat sti op i delkonturer, så stregen tegnes samtidig på alle linjer.
+    const strokes = document.createElementNS(SVGNS, 'g');
+    strokes.setAttribute('class', 'udraw__strokes');
+    svg.querySelectorAll('path').forEach((p) => {
+      const parts = (p.getAttribute('d') || '').match(/[Mm][^Mm]*/g) || [];
+      const g = document.createElementNS(SVGNS, 'g');
+      const t = p.closest('g')?.getAttribute('transform');
+      if (t) g.setAttribute('transform', t);
+      const pt = p.getAttribute('transform');
+      parts.forEach((d, i) => {
+        const s = document.createElementNS(SVGNS, 'path');
+        s.setAttribute('d', d);
+        if (pt) s.setAttribute('transform', pt);
+        s.setAttribute('pathLength', '1');
+        s.style.setProperty('--k', String(i % 9));
+        g.appendChild(s);
+      });
+      strokes.appendChild(g);
+    });
+    svg.appendChild(strokes);
+    if (reduce) { root.classList.add('is-in'); return; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { root.classList.add('is-in'); io.disconnect(); }
+    }, { threshold: 0.25 });
+    io.observe(root);
+  });
+</script>
+
+<style>
+  .udraw { position: relative; width: 100%; aspect-ratio: var(--ar); }
+  .udraw__car, .udraw__car :global(svg) { display: block; width: 100%; height: 100%; overflow: visible; }
+  /* Fyldet (selve tegningen) toner frem, når stregerne er tegnet */
+  .udraw__car :global(svg > g:not(.udraw__strokes)) { opacity: 0; transition: opacity 900ms var(--ease-out) 1500ms; }
+  .udraw__car :global(.udraw__strokes) { fill: none; stroke: currentColor; stroke-width: 2.4; vector-effect: non-scaling-stroke; }
+  .udraw__car :global(.udraw__strokes path) {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1800ms cubic-bezier(0.45, 0, 0.2, 1), opacity 700ms ease 2000ms;
+    transition-delay: calc(var(--k) * 45ms), 2000ms;
+  }
+  .udraw.is-in .udraw__car :global(svg > g:not(.udraw__strokes)) { opacity: 1; }
+  .udraw.is-in .udraw__car :global(.udraw__strokes path) { stroke-dashoffset: 0; opacity: 0; }
+  .udraw.is-failed { display: none; }
+  .udraw__floor {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    bottom: -6px;
+    height: 1px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1400ms var(--ease-out) 300ms;
+  }
+  .udraw.is-in .udraw__floor { transform: scaleX(1); }
+
+  /* Klassisk: blæk på papir */
+  .udraw--klassisk { color: #1a1612; }
+  .udraw--klassisk .udraw__floor { background: linear-gradient(90deg, transparent, rgba(26, 22, 18, 0.45) 15%, rgba(26, 22, 18, 0.45) 85%, transparent); }
+
+  /* Eksklusiv: sølv på sort + guldglimt */
+  .udraw--eksklusiv { color: #ecebe8; }
+  .udraw--eksklusiv .udraw__car :global(.udraw__strokes) { stroke: var(--gold); }
+  .udraw--eksklusiv .udraw__floor { background: linear-gradient(90deg, transparent, rgba(201, 164, 106, 0.6) 15%, rgba(201, 164, 106, 0.6) 85%, transparent); }
+  .udraw--eksklusiv .udraw__car { transition: filter 1400ms var(--ease-out) 2100ms; }
+  .udraw--eksklusiv.is-in .udraw__car { filter: drop-shadow(0 0 18px rgba(201, 164, 106, 0.28)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .udraw__car :global(.udraw__strokes) { display: none; }
+    .udraw__car :global(svg > g:not(.udraw__strokes)) { opacity: 1; transition: none; }
+    .udraw__floor { transform: none; transition: none; }
+  }
+</style>

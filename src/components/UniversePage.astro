@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StockGrid from './StockGrid.astro';
 import Breadcrumbs from './Breadcrumbs.astro';
 import Icon from './Icon.astro';
+import UniverseDrawing from './UniverseDrawing.astro';
 import CarAlert from './CarAlert.astro';
 import type { Univers } from '../lib/cars';
 import { getCarsByUnivers } from '../lib/cars';
@@ -40,14 +41,18 @@ const collection = {
     {univers === 'eksklusiv' && <span class="u-hero__lines" aria-hidden="true"></span>}
     <div class="container u-hero__inner">
       <Breadcrumbs items={crumbs} />
-      {univers === 'klassisk' && (
-        <span class="stamp stamp--round u-hero__stamp reveal" aria-hidden="true">Klassisk<br />· {forSale} til salg ·<br />Bramming</span>
-      )}
       <p class="eyebrow u-hero__eyebrow reveal">{univers === 'klassisk' ? 'Det klassiske univers' : 'Det eksklusive univers'}</p>
       <h1 class="u-hero__h1">
         <span class:list={['u-hero__main', { 'metal-text shine': univers === 'eksklusiv' }]}>{h1Main}</span>
         {h1Rest.length > 0 && <span class="u-hero__sub">{h1Rest.join(' – ')}</span>}
       </h1>
+      <div class="u-hero__art">
+        <UniverseDrawing univers={univers}>
+          {univers === 'klassisk' && (
+            <span class="u-hero__seal reveal" aria-hidden="true"><span class="stamp stamp--round u-hero__stamp">Klassisk<br />· {forSale} til salg ·<br />Bramming</span></span>
+          )}
+        </UniverseDrawing>
+      </div>
       <div class="u-hero__intro">
         {intro.map((p, i) => <p class={univers === 'eksklusiv' ? 'reveal-wipe' : 'reveal'} style={`--i:${i}`}>{p}</p>)}
       </div>
@@ -115,8 +120,20 @@ const collection = {
     color: var(--gold-deep);
     font-style: italic;
   }
-  .u-hero__stamp { position: absolute; right: var(--gutter); top: clamp(40px, 7vw, 96px); transform: rotate(-10deg); }
-  @media (max-width: 720px) { .u-hero__stamp { width: 104px; height: 104px; font-size: 0.5625rem; top: 64px; } }
+  /* Stregtegning; stemplet sidder på tegningen (aldrig oven på teksten) */
+  .u-hero__art { width: min(100%, 760px); justify-self: end; margin-block: 12px 8px; }
+  @media (min-width: 1024px) {
+    .u-hero__art { width: min(58%, 760px); }
+    .u-hero--klassisk .u-hero__art { margin-top: -64px; }
+    .u-hero--eksklusiv .u-hero__art { margin-top: -8px; }
+  }
+  .u-hero__seal { position: absolute; right: 0; top: -22%; z-index: 1; display: grid; place-items: center; padding: 8px; border-radius: 50%; background: var(--paper); }
+  .u-hero__stamp { transform: rotate(-10deg); }
+  @media (max-width: 720px) {
+    .u-hero__art { width: 100%; }
+    .u-hero__seal { top: -44%; right: -4px; padding: 5px; }
+    .u-hero__stamp { width: 96px; height: 96px; font-size: 0.5rem; letter-spacing: 0.1em; }
+  }
 
   /* Eksklusiv: præcision – rasterlinjer, metal, stram typografi */
   .u-hero--eksklusiv {

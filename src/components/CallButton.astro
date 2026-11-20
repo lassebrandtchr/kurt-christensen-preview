@@ -1,0 +1,21 @@
+---
+/**
+ * "Ring til Kurt"-knap: etiket på linje 1, telefonnummer på linje 2 (aldrig delt midt i nummeret).
+ */
+import Icon from './Icon.astro';
+import { SITE } from '../lib/site';
+
+interface Props { label?: string; block?: boolean; magnetic?: boolean; class?: string; }
+const { label = 'Ring til Kurt', block = false, magnetic = true, class: cls } = Astro.props;
+---
+<a
+  href={SITE.phoneHref}
+  class:list={['btn', 'btn--primary', 'btn--call', { 'btn--block': block, magnetic }, cls]}
+  aria-label={`${label} på ${SITE.phone}`}
+>
+  <Icon name="phone" />
+  <span class="btn__stack">
+    <span class="btn__label">{label}</span>
+    <span class="btn__num tabular">{SITE.phone}</span>
+  </span>
+</a>

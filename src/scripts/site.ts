@@ -10,18 +10,25 @@ function initReveal() {
     els.forEach((el) => el.classList.add('is-in'));
     return;
   }
+  // .reveal-wipe er helt klippet væk (clip-path) før reveal, og nogle mobilbrowsere regner den så
+  // som usynlig for IntersectionObserver. Observér derfor forælderen og vis alle dens wipe-børn.
+  const targets = new Map<Element, HTMLElement[]>();
+  els.forEach((el) => {
+    const t = el.classList.contains('reveal-wipe') && el.parentElement ? el.parentElement : el;
+    targets.set(t, [...(targets.get(t) || []), el]);
+  });
   const io = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
         if (e.isIntersecting) {
-          e.target.classList.add('is-in');
+          targets.get(e.target)?.forEach((el) => el.classList.add('is-in'));
           io.unobserve(e.target);
         }
       }
     },
-    { rootMargin: '0px 0px -10% 0px', threshold: 0.05 },
+    { rootMargin: '0px 0px -10% 0px', threshold: 0 },
   );
-  els.forEach((el) => io.observe(el));
+  targets.forEach((_, t) => io.observe(t));
 }
 
 /* Header: skift til fast flade ved scroll */

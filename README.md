@@ -134,6 +134,14 @@ Build-indstillinger hos hosting: base directory `site`, build command `npm run b
 Hover på portalerne "Klassiske biler" / "Eksklusive biler" får en stregtegnet Ferrari 308 GTS (sort) / Lamborghini Gallardo LP560-4 (hvid) til at køre ind i nederste højre hjørne med rullende hjul og røgpust; ved mouse leave bakker den ud. Touch: kører ind én gang ved scroll. Reduced motion: fader ind. Kode: `src/components/Portals.astro`; SVG'er: `public/drawings/` (hentes først, når portalerne nærmer sig skærmen).
 Metode (2026-11-20): Higgsfield (GPT Image 2.6) lavede streg efter frit licenserede sidefotos fra Wikimedia Commons (CC BY 2.0, krediteret på privatlivspolitik-siden). AI-stregen afveg nogle % i proportioner, så den blev trukket på plads med en stykkevis lineær warp efter målepunkter fra fotoet (næse, hjulcentre, hale, tag, jord) og kontrolleret ved overlay; hjulene er separate grupper (`.car-wheel`) med uniform skala, så de kan rotere. `--spin` = 118 % kørsel × viewBox-bredde / hjulradius.
 
+Samme to tegninger bruges i toppen af universsiderne (`src/components/UniverseDrawing.astro`): hver delkontur får sin egen streg, der tegnes ind, hvorefter fyldet toner frem. Klassisk = blæk på papir med stemplet "Klassisk · N til salg" på tegningen; eksklusiv = guldstreg med svag glød.
+
+## Kortet på Kontakt
+
+`src/components/RouteMap.astro` tegner vejen til Kurt ud fra rigtige OpenStreetMap-data: vejnet, kyst, og ruterne fra Esbjerg/Ribe/Vejen (OSRM) med km. Animeres ind, når kortet kommer i syne; knapperne "Fra …" kører ruten igen.
+"Vis Google-kort" indlæser Googles kort i en iframe FØRST ved klik (ingen Google-kald eller cookies før; nævnt i privatlivspolitikken). Kortdata krediteres under kortet (ODbL).
+Data bygges én gang med `python3 scripts/build-route-map.py <mappe-med-rådata>` → `src/data/route-map.json` (rådata-forespørgslerne står øverst i scriptet). Adressen (Ribevej 11) er geokodet via Nominatim: 55.46282, 8.705573 – også brugt i `SITE.geo`.
+
 ## SEO
 
 - Unik title, meta description, canonical og Open Graph pr. side (`src/layouts/BaseLayout.astro`).

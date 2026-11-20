@@ -1,0 +1,1 @@
+import{t as e}from"./gsap.CS__h_fp.js";import{t}from"./ScrollTrigger.WC99BbFh.js";var n=document.querySelector(`[data-text-reveal]`),r=window.matchMedia(`(prefers-reduced-motion: reduce)`).matches;n&&!r&&(e.registerPlugin(t),e.fromTo(n.querySelectorAll(`.w`),{opacity:.15},{opacity:1,stagger:.05,ease:`none`,scrollTrigger:{trigger:n,start:`top 80%`,end:`bottom 45%`,scrub:!0}}));
